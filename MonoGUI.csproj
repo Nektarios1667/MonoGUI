@@ -30,8 +30,20 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
   </ItemGroup>
+	<PropertyGroup>
+		<PackageId>MonoGUI</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Nektarios</Authors>
+		<Description>This is a package used to create simple gui's in MonoGame</Description>
+		<PackageTags>monogame;nuget;gui</PackageTags>
+		<RepositoryUrl>https://github.com/Nektarios1667/MonoGUI</RepositoryUrl>
+	</PropertyGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>
+	<ItemGroup>
+		<None Update="Program.cs" Pack="false" />
+		<None Update="Window.cs" Pack="false" />
+	</ItemGroup>
 </Project>
