@@ -83,7 +83,7 @@ namespace MonoGUI
                 Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, text, Font, args: [text], border: Seperation, borderColor: BorderColor));
             }
         }
-        public void SelectItem(string item) { Selected = item; }
+        public void SelectItem(string item) { Selected = item; OnItemSelected(item); }
         // When changed value
         public virtual void OnItemSelected(string item)
         {

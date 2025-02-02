@@ -59,7 +59,7 @@ namespace MonoGUI
             // Hovering
             MouseState mouseState = Gui.MouseState;
             bool pressed = mouseState.LeftButton == ButtonState.Pressed;
-            if (PointRectCollide(Location, Dimensions, mouseState.Position))
+            if (PointRectCollide(Location, new(Dimensions.X - Border, Dimensions.Y - Border), mouseState.Position))
             {
                 // Clicking
                 if (pressed && !Last)

@@ -61,6 +61,7 @@ namespace MonoGUI
                 Gui.Widgets.Add(new Button(Gui, new(500, i * 40), new(100, 30), Color.White, Color.Gray, Color.DarkGray, (Action<string>)Console.WriteLine, args: [$"Button {i} clicked..."], text: $"Button {i}", font: Arial));
                 ((ListBox)Gui.Widgets[6]).AddItems($"Item {i}");
             }
+            ((ListBox)Gui.Widgets[6]).ItemSelected += Console.WriteLine;
             ((HorizontalSlider)Gui.Widgets[4]).ValueChanged += Console.WriteLine;
         }
 
