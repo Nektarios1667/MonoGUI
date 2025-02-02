@@ -77,6 +77,7 @@ namespace MonoGUI
         {
             // Not drawing
             if (!Visible) { return; }
+            if (Gui.CircleOutline == null) { return; }
 
             // Line
             Gui.Batch.DrawLine(Location, new(Location.X + Length, Location.Y), Background, Thickness);
@@ -85,6 +86,9 @@ namespace MonoGUI
             {
                 Gui.Batch.DrawCircle(new(new(Location.X + Value * Length, Location.Y), i), 20, State == 0 ? Color : Highlight);
             }
+            // Outline
+            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X + Value * Length, Location.Y), Gui.CircleOutline.Bounds, Color.Black, 0, new(7, 7), Size / 7, SpriteEffects.None, 0f);
+
         }
 
         // When changed value

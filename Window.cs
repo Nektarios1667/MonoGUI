@@ -40,6 +40,7 @@ namespace MonoGUI
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Gui = new GUI(this, _spriteBatch);
+            Gui.LoadContent(Content);
 
             // Fonts
             Arial = Content.Load<SpriteFont>("Arial");

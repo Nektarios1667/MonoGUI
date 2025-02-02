@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -14,6 +15,9 @@ namespace MonoGUI
         public MouseState MouseState { get; set; }
         public KeyboardState KeyState { get; set; }
         public float Delta { get; private set; }
+        public Texture2D? CircleOutline { get; private set; }
+        public SpriteFont? Arial { get; private set; }
+        private bool _loaded { get; set; }
         public GUI(Game game, SpriteBatch spriteBatch)
         {
             Game = game;
@@ -21,9 +25,13 @@ namespace MonoGUI
             Batch = spriteBatch;
             MouseState = new();
             KeyState = new();
+            _loaded = false;
         }
         public void Update(float deltaTime, MouseState mouseState, KeyboardState keyState)
         {
+            // Not loaded
+            if (!_loaded) { return; }
+
             // Delta time
             Delta = deltaTime;
 
@@ -37,6 +45,12 @@ namespace MonoGUI
         public void Draw()
         {
             foreach (Widget widget in Widgets) { widget.Draw(); }
+        }
+        public void LoadContent(ContentManager content)
+        {
+            CircleOutline = content.Load<Texture2D>("CircleOutline");
+            Arial = content.Load<SpriteFont>("Arial");
+            _loaded = true;
         }
     }
 }

@@ -77,14 +77,17 @@ namespace MonoGUI
         {
             // Not drawing
             if (!Visible) { return; }
+            if (Gui.CircleOutline == null) { return; }
 
             // Line
             Gui.Batch.DrawLine(Location, new(Location.X, Location.Y + Length), Background, Thickness);
             // Circle
-            for (int i = Size; i > 0; i--)
+            for (int i = Size - 1; i > 0; i--)
             {
-                Gui.Batch.DrawCircle(new(new(Location.X, Location.Y + Value * Length), i), 20, State == 0 ? Color : Highlight);
+                Gui.Batch.DrawCircle(new(new(Location.X, Location.Y + Value * Length), i), (int)(Size * 1.5), State == 0 ? Color : Highlight);
             }
+            // Outline
+            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X, Location.Y + Value * Length), Gui.CircleOutline.Bounds, Color.Black, 0, new(7, 7), Size / 7, SpriteEffects.None, 0f);
         }
 
         // When changed value
