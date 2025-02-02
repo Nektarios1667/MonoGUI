@@ -48,14 +48,14 @@ namespace MonoGUI
             // Widgets
             Gui.Widgets = [
                 new TextBox(Gui, new(100, 100), Color.Red, "Textbox", Arial),
-                new Popup(Gui, new(100, 300), new(200, 200), Color.DarkGray, "Popup Window", Arial),
-                new Input(Gui, new(100, 510), new(300, 25), Color.Black, Color.Gray, Color.LightGray, Arial),
-                new Infobox(Gui, new(100, 550), new(300, 300), new(100, 700, 300, 300), Color.Gray, Color.Black, "Infobox", Arial),
-                new Slider(Gui, new(600, 200), 100, Color.Black, new(55, 55, 55)),
+                new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window", Arial),
+                new Input(Gui, new(100, 350), new(300, 25), Color.Black, Color.Gray, Color.LightGray, Arial),
+                new Infobox(Gui, new(100, 400), new(300, 300), new(100, 400, 300, 300), Color.Gray, Color.Black, "Infobox", Arial),
+                new Slider(Gui, new(100, 725), 100, Color.Black, new(55, 55, 55)),
             ];
             for (int i = 0; i < 10; i++)
             {
-                Gui.Widgets.Add(new Button(Gui, new(800, i * 40), new(100, 30), Color.White, Color.Gray, Color.DarkGray, (Action<string>)Console.WriteLine, args: [$"Button {i} clicked..."], text: $"Button {i}", font: Arial));
+                Gui.Widgets.Add(new Button(Gui, new(500, i * 40), new(100, 30), Color.White, Color.Gray, Color.DarkGray, (Action<string>)Console.WriteLine, args: [$"Button {i} clicked..."], text: $"Button {i}", font: Arial));
             }
             ((Slider)Gui.Widgets[4]).ValueChanged += Console.WriteLine;
         }
