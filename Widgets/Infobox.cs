@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace MonoGUI
 {
-    public class Infobox : Widget
+    public class InfoBox : Widget
     {
         public Xna.Vector2 Dimensions { get; private set; }
         public Rectangle Rect
@@ -40,7 +40,7 @@ namespace MonoGUI
         public float Delay { get; set; }
         private float Time { get; set; }
         // Centering
-        public Infobox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Rectangle activation, Color color, Color foreground, string text, SpriteFont? font = default, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
+        public InfoBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Rectangle activation, Color color, Color foreground, string text, SpriteFont? font = default, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
         {
             Dimensions = dimensions;
             Activation = activation;
