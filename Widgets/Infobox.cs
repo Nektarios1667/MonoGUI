@@ -28,11 +28,11 @@ namespace MonoGUI
             get { return _text; }
             set {
                 _text = value;
-                Softwrapped = SoftwrapWords(value, Font, Inside);
+                Softwrapped = Font != null ? SoftwrapWords(value, Font, Inside) : value;
                 Inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
             }
         }
-        public SpriteFont Font { get; set; }
+        public SpriteFont? Font { get; set; }
         public Color Foreground { get; set; }
         public Xna.Rectangle Activation { get; set; }
         public string Softwrapped { get; set; }
@@ -40,7 +40,7 @@ namespace MonoGUI
         public float Delay { get; set; }
         private float Time { get; set; }
         // Centering
-        public Infobox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Rectangle activation, Color color, Color foreground, string text, SpriteFont font, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
+        public Infobox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Rectangle activation, Color color, Color foreground, string text, SpriteFont? font = default, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
         {
             Dimensions = dimensions;
             Activation = activation;
@@ -49,10 +49,10 @@ namespace MonoGUI
             BorderColor = (borderColor == null ? Color.Black : (Color)borderColor);
             Visible = true;
             _text = text;
-            Font = font;
+            Font = font == default ? gui.Arial : font;
             Foreground = foreground;
             Inside = new(Dimensions.X - Border * 2 - 4, Dimensions.Y - Border * 2 - 4);
-            Softwrapped = SoftwrapWords(text, font, Inside);
+            Softwrapped = Font != null ? SoftwrapWords(text, Font, Inside) : text;
             Delay = delay;
         }
         public override void Update()

@@ -16,12 +16,12 @@ namespace MonoGUI
     {
         public string Text { get; private set; }
         public Xna.Color Color { get; private set; }
-        public SpriteFont Font { get; private set; }
+        public SpriteFont? Font { get; private set; }
         // Centering
-        public TextBox(GUI gui, Xna.Vector2 location, Color color, string text, SpriteFont font) : base(gui, location)
+        public TextBox(GUI gui, Xna.Vector2 location, Color color, string text, SpriteFont? font = default) : base(gui, location)
         {
             Text = text;
-            Font = font;
+            Font = font == default ? gui.Arial : font;
             Color = color;
         }
         public override void Update() {}
@@ -29,6 +29,7 @@ namespace MonoGUI
         {
             // Not drawing
             if (!Visible) { return; }
+            if (Font == null) { return; }
 
             // Text
             Gui.Batch.DrawString(Font, Text, Location, Color);

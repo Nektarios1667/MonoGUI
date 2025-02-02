@@ -24,7 +24,7 @@ namespace MonoGUI
         }
         public Xna.Color Color { get; private set; }
         public Xna.Color Highlight { get; private set; }
-        public SpriteFont Font { get; private set; }
+        public SpriteFont? Font { get; private set; }
         public Color Foreground { get; private set; }
         public Delegate? Function { get; private set; }
         public int Border { get; private set; }
@@ -88,20 +88,20 @@ namespace MonoGUI
             ["OemTilde"] = '~',
         };
         private string[] controlKeys = [ "Back", "Left", "Right" ];
-        public Input(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont font, int border = 3, Color borderColor = default) : base(gui, location)
+        public Input(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Text = "";
             Textsize = 0;
             blink = 0;
             cursorX = 0;
-            Charsize = font.MeasureString("_");
-            Font = font;
+            Charsize = font != null ? font.MeasureString("_") : new(0, 0);
+            Font = font == default ? gui.Arial : font;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
             Border = border;
-            BorderColor = (borderColor == default ? Color.Black : borderColor);
+            BorderColor = borderColor == default ? Color.Black : borderColor;
             Selected = false;
             Cursor = 0;
             Previous = [];
@@ -110,6 +110,7 @@ namespace MonoGUI
         {
             // Hidden
             if (!Visible) { return; }
+            if (Font == null) { return; }
 
             // Blink
             if (Selected) { blink = (blink + Gui.Delta) % 1.4f; }
@@ -181,6 +182,7 @@ namespace MonoGUI
         }
         public void Recalculate()
         {
+            if (Font == null) { return; }
             // Recalculate text size
             Textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
             cursorX = (int)Font.MeasureString(Text[..Cursor]).X;

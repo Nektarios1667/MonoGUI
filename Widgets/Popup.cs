@@ -10,6 +10,7 @@ using MonoGame.Extended;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoGUI
 {
@@ -36,26 +37,26 @@ namespace MonoGUI
         private bool Dragging { get; set; }
         public List<Widget> Widgets { get; set; }
         public string Title { get; set; }
-        public SpriteFont TitleFont { get; set; }
+        public SpriteFont? TitleFont { get; set; }
         public Color TitleColor { get; set; }
         // Centering
-        public Popup(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, string title, SpriteFont titleFont, Color? titleColor = null, Color? barColor = null, int barSize = 25, int border = 3, Color? borderColor = null) : base(gui, location)
+        public Popup(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, string title, SpriteFont? titleFont = default, Color titleColor = default, Color barColor = default, int barSize = 25, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Color = color;
             Border = border;
-            BorderColor = (borderColor == null ? Color.Black : (Color)borderColor);
-            BarColor = (barColor == null ? Color.Gray : (Color)barColor);
+            BorderColor = (borderColor == default ? Color.Black : (Color)borderColor);
+            BarColor = (barColor == default ? Color.Gray : (Color)barColor);
             BarSize = barSize;
             BarDimensions = new(dimensions.X, barSize);
             Visible = true;
             LastBarPosition = new(-1, -1);
             Previous = new();
-            TitleColor = titleColor == null ? Color.Black : (Color)titleColor;
+            TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
             Button closeButton = new(gui, new(location.X + dimensions.X - 50, location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             TextBox titleBox = new(gui, new(location.X + 10, location.Y + 4), TitleColor, title, titleFont);
             Widgets = [closeButton, titleBox];
-            TitleFont = titleFont;
+            TitleFont = titleFont == default ? gui.Arial : titleFont;
             Title = title;
 
         }
@@ -92,6 +93,7 @@ namespace MonoGUI
         {
             // Not drawing
             if (!Visible) { return; }
+            if (TitleFont == null) { return; }
 
             // Background
             Gui.Batch.FillRectangle(Rect, Color);

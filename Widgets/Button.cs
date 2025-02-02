@@ -32,11 +32,11 @@ namespace MonoGUI
         public bool Last { get; private set; }
         // Centering
         private Xna.Vector2 offset { get; set; }
-        public Button(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, Delegate? function, string text = "", SpriteFont? font = null, object?[]? args = null, int border = 3, Color borderColor = default) : base(gui, location)
+        public Button(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, Delegate? function, string text = "", SpriteFont? font = default, object?[]? args = null, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Text = text;
-            Font = font;
+            Font = font == default ? gui.Arial : font;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
@@ -75,6 +75,7 @@ namespace MonoGUI
         {
             // Not drawing
             if (!Visible) { return; }
+            if (Font == null) { return; }
 
             // Background
             Gui.Batch.FillRectangle(Rect, State == 0 ? Color : Highlight);
