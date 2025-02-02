@@ -8,22 +8,14 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Icon.ico" />
-    <None Remove="Icon.bmp" />
-  </ItemGroup>
   <PropertyGroup>
 	  <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icon.ico">
-      <LogicalName>Icon.ico</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icon.bmp">
-      <LogicalName>Icon.bmp</LogicalName>
-    </EmbeddedResource>
+    <None Remove=".gitattributes" />
+    <None Remove=".gitignore" />
+    <None Remove="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Extended" Version="4.0.4" />
