@@ -54,7 +54,7 @@ namespace MonoGUI
                 new Infobox(Gui, new(100, 400), new(300, 300), new(100, 400, 300, 300), Color.Gray, Color.Black, "Infobox", Arial),
                 new HorizontalSlider(Gui, new(100, 725), 100, Color.Black, new(55, 55, 55)),
                 new VerticalSlider(Gui, new(100, 750), 100, Color.Black, new(55, 55, 55)),
-                new ListBox(Gui, new(650, 50), new(300, 500), Color.Black, Color.Gray, Color.DarkGray),
+                new ListBox(Gui, new(650, 50), new(100, 100), Color.Black, Color.Gray, Color.DarkGray),
             ];
             for (int i = 0; i < 10; i++)
             {
