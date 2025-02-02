@@ -22,6 +22,8 @@ namespace MonoGUI
         public abstract void Draw();
 
         // Static methods
+
+        // PointRectCollide
         public static bool PointRectCollide(Xna.Vector2 loc, Xna.Vector2 dim, Xna.Vector2 point)
         {
             return (point.X >= loc.X && point.X <= loc.X + dim.X) && (point.Y >= loc.Y && point.Y <= loc.Y + dim.Y);
@@ -41,6 +43,24 @@ namespace MonoGUI
         public static bool PointRectCollide(Rectangle rect, Xna.Point point)
         {
             return PointRectCollide(rect.Location, rect.Size, point.ToVector2());
+        }
+        
+        // PointCircleCollide
+        public static bool PointCircleCollide(Xna.Vector2 loc, Xna.Vector2 center, int radius)
+        {
+            return Xna.Vector2.DistanceSquared(loc, center) <= radius * radius;
+        }
+        public static bool PointCircleCollide(Xna.Point loc, Xna.Vector2 center, int radius)
+        {
+            return PointCircleCollide(loc.ToVector2(), center, radius);
+        }
+        public static bool PointCircleCollide(Xna.Vector2 loc, Xna.Point center, int radius)
+        {
+            return PointCircleCollide(loc, center.ToVector2(), radius);
+        }
+        public static bool PointCircleCollide(Xna.Point loc, Xna.Point center, int radius)
+        {
+            return PointCircleCollide(loc.ToVector2(), center.ToVector2(), radius);
         }
     }
 }
