@@ -75,8 +75,7 @@ namespace MonoGUI
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Exit
-            if (KeyState.IsKeyDown(Keys.Escape))
-                Exit();
+            if (KeyState.IsKeyDown(Keys.Escape)) { Exit(); }
 
             // TODO: Add your update logic here
             Gui.Update(DeltaTime, MouseState, KeyState);
@@ -97,8 +96,8 @@ namespace MonoGUI
             Gui.Draw();
 
             // End
-            _spriteBatch.End()
-;
+            _spriteBatch.End();
+
             // Base
             base.Draw(gameTime);
         }
