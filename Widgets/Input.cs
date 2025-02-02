@@ -95,7 +95,7 @@ namespace MonoGUI
             Textsize = 0;
             blink = 0;
             cursorX = 0;
-            Charsize = font.MeasureString("/");
+            Charsize = font.MeasureString("_");
             Font = font;
             Foreground = foreground;
             Color = color;
@@ -131,7 +131,7 @@ namespace MonoGUI
             foreach (Keys key in pressed)
             {
                 string keyname = key.ToString();
-                if (!Previous.Contains(key) && (Textsize + Charsize.X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
+                if (!Previous.Contains(key) && (Textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
                 {
                     // Uppercase letter
                     if (keyname.Length == 1 && shifted) { Text = Text.Insert(Cursor, keyname); }
@@ -185,6 +185,19 @@ namespace MonoGUI
             Textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
             cursorX = (int)Font.MeasureString(Text[..Cursor]).X;
             blink = .71f;
+        }
+        public string ParseRegularChar(string keyname, bool shifted)
+        {
+            char specialKeyname, specialUpperKeyname;
+            // Uppercase letter
+            if (keyname.Length == 1 && shifted) { return keyname; }
+            // Lowercase letter
+            else if (keyname.Length == 1) { return keyname.ToLower(); }
+            // Lowercase symbol
+            else if (!shifted && specialKeys.TryGetValue(keyname, out specialKeyname)) { return specialKeyname.ToString(); }
+            // Uppercase symbol
+            else if (shifted && specialKeys.ContainsKey(keyname) && upperSymbols.TryGetValue(keyname, out specialUpperKeyname)) { return specialUpperKeyname.ToString(); }
+            return "";
         }
 
         // Static

@@ -62,5 +62,9 @@ namespace MonoGUI
         {
             return PointCircleCollide(loc.ToVector2(), center.ToVector2(), radius);
         }
+
+        // Nofunc
+        public static void NoFunc(params object[] _) {}
+        public static void NoFunc() { }
     }
 }

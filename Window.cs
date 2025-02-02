@@ -49,13 +49,15 @@ namespace MonoGUI
             Gui.Widgets = [
                 new TextBox(Gui, new(100, 100), Color.Red, "Textbox", Arial),
                 new Popup(Gui, new(100, 300), new(200, 200), Color.DarkGray, "Popup Window", Arial),
-                new Input(Gui, new(100, 500), new(100, 40), Color.Black, Color.Gray, Color.LightGray, Arial),
+                new Input(Gui, new(100, 510), new(300, 25), Color.Black, Color.Gray, Color.LightGray, Arial),
                 new Infobox(Gui, new(100, 550), new(300, 300), new(100, 700, 300, 300), Color.Gray, Color.Black, "Infobox", Arial),
-                new Button(Gui, new(600, 100), new(100, 40), Color.Black, Color.Gray, Color.LightGray, (Action<string>)Console.WriteLine, text:"Button", font:Arial, args:["Button clicked!"]),
                 new Slider(Gui, new(600, 200), 100, Color.Black, new(55, 55, 55)),
             ];
-
-            ((Slider)Gui.Widgets[5]).ValueChanged += Console.WriteLine;
+            for (int i = 0; i < 10; i++)
+            {
+                Gui.Widgets.Add(new Button(Gui, new(800, i * 40), new(100, 30), Color.White, Color.Gray, Color.DarkGray, (Action<string>)Console.WriteLine, args: [$"Button {i} clicked..."], text: $"Button {i}", font: Arial));
+            }
+            ((Slider)Gui.Widgets[4]).ValueChanged += Console.WriteLine;
         }
 
         protected override void Update(GameTime gameTime)

@@ -51,7 +51,7 @@ namespace MonoGUI
             if (PointCircleCollide(mouseState.Position, new Xna.Vector2(Location.X + Value * Length, Location.Y), Size) || Dragging)
             {
                 // Clicking
-                if (mouseState.LeftButton == ButtonState.Pressed)
+                if (mouseState.LeftButton == ButtonState.Pressed && (Previous.LeftButton != ButtonState.Pressed || Dragging))
                 {
                     // Update
                     State = 2;
