@@ -66,5 +66,45 @@ namespace MonoGUI
         // Nofunc
         public static void NoFunc(params object[] _) {}
         public static void NoFunc() { }
+
+        // Softwraps
+        public static string Softwrap(string text, SpriteFont font, Xna.Vector2 dimensions)
+        {
+            // setup
+            string wrapped = "";
+            int start = 0;
+            int end = 1;
+
+            while (end < text.Length)
+            {
+                // Wrap
+                if (font.MeasureString(text[start..end]).X + 2 > dimensions.X) { wrapped += $"{text[start..end]}\n"; start = end; }
+                end++;
+            }
+            return wrapped + text[start..end];
+        }
+        public static string SoftwrapWords(string text, SpriteFont font, Xna.Vector2 dimensions)
+        {
+            // setup
+            string wrapped = "";
+            int start = 0;
+            int end = 1;
+
+            while (end < text.Length)
+            {
+                // Wrap
+                if (font.MeasureString(text[start..end]).X + 2 > dimensions.X)
+                {
+                    int cutoff = text[start..end].LastIndexOf(' ') + start;
+                    if (cutoff <= start) { cutoff = end; }
+                    wrapped += $"{text[start..cutoff]}\n";
+                    start = cutoff + 1; // Add one to ignore the space itself
+                    end = cutoff + 2;
+                }
+                end++;
+            }
+            wrapped += text[start..];
+            return wrapped;
+        }
     }
 }
