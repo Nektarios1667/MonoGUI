@@ -53,6 +53,11 @@ namespace MonoGUI
             // Hovering
             foreach (Button item in Items)
             {
+                // Check X
+                if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X + item.Border > Location.X + Dimensions.X) { continue; }
+                // Check Y
+                if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y + item.Border > Location.Y + Dimensions.Y) { continue; }
+                // Update
                 item.Update();
             }
         }
