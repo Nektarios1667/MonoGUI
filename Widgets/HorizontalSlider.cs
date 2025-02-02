@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace MonoGUI
 {
-    public class Slider : Widget
+    public class HorizontalSlider : Widget
     {
         public event Action<float> ValueChanged;
         public int Length { get; private set; }
@@ -29,7 +29,7 @@ namespace MonoGUI
         private bool Dragging { get; set; }
         private MouseState Previous { get; set; }
         private Xna.Vector2 LastCirclePosition { get; set; }
-        public Slider(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
+        public HorizontalSlider(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
         {
             Dragging = false;
             Length = length;
