@@ -48,7 +48,7 @@ namespace MonoGUI
 
             // Widgets
             Gui.Widgets = [
-                new TextBox(Gui, new(100, 100), Color.Red, "Textbox", Arial),
+                new Label(Gui, new(100, 100), Color.Red, "Textbox", Arial),
                 new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window", Arial),
                 new Input(Gui, new(100, 350), new(300, 25), Color.Black, Color.Gray, Color.LightGray, Arial),
                 new InfoBox(Gui, new(100, 400), new(300, 300), new(100, 400, 300, 300), Color.Gray, Color.Black, "Infobox", Arial),

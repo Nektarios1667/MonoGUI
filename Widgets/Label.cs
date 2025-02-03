@@ -12,13 +12,13 @@ using System.Runtime.CompilerServices;
 
 namespace MonoGUI
 {
-    public class TextBox : Widget
+    public class Label : Widget
     {
         public string Text { get; private set; }
         public Xna.Color Color { get; private set; }
         public SpriteFont? Font { get; private set; }
         // Centering
-        public TextBox(GUI gui, Xna.Vector2 location, Color color, string text, SpriteFont? font = default) : base(gui, location)
+        public Label(GUI gui, Xna.Vector2 location, Color color, string text, SpriteFont? font = default) : base(gui, location)
         {
             Text = text;
             Font = font == default ? gui.Arial : font;

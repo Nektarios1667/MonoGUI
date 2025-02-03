@@ -54,7 +54,7 @@ namespace MonoGUI
             Previous = new();
             TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
             Button closeButton = new(gui, new(location.X + dimensions.X - 50, location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
-            TextBox titleBox = new(gui, new(location.X + 10, location.Y + 4), TitleColor, title, titleFont);
+            Label titleBox = new(gui, new(location.X + 10, location.Y + 4), TitleColor, title, titleFont);
             Widgets = [closeButton, titleBox];
             TitleFont = titleFont == default ? gui.Arial : titleFont;
             Title = title;
