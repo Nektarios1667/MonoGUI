@@ -26,7 +26,7 @@
 		<PackageId>MonoGUI</PackageId>
 		<Version>1.1.2</Version>
 		<Authors>Nektarios</Authors>
-		<Description>This is a package used to create simple gui's in MonoGame</Description>
+		<Description>A simple GUI toolkit for MonoGame with many customizable widgets.</Description>
 		<PackageTags>monogame;gui</PackageTags>
 		<RepositoryUrl>https://github.com/Nektarios1667/MonoGUI</RepositoryUrl>
 	</PropertyGroup>
