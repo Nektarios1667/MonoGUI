@@ -113,8 +113,8 @@ namespace MonoGUI
             if (Font == null) { return; }
 
             // Blink
-            if (Selected) { blink = (blink + Gui.Delta) % 1.4f; }
-            else blink = .7f;
+            if (Selected) { blink = (blink + Gui.Delta) % 1f; }
+            else blink = .499f;
 
             // Clicking
             MouseState mouseState = Gui.MouseState;
@@ -178,7 +178,7 @@ namespace MonoGUI
             }
 
             // Cursor
-            if (blink >= .7) { Gui.Batch.DrawLine(Location.X + Border + cursorX, Location.Y + Border + 1, Location.X + Border + cursorX, Location.Y + Charsize.Y + 2, Color.Black, 2); }
+            if (blink >= .5) { Gui.Batch.DrawLine(Location.X + Border + cursorX, Location.Y + Border + 1, Location.X + Border + cursorX, Location.Y + Charsize.Y + 2, Color.Black, 2); }
         }
         public void Recalculate()
         {
@@ -186,7 +186,7 @@ namespace MonoGUI
             // Recalculate text size
             Textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
             cursorX = (int)Font.MeasureString(Text[..Cursor]).X;
-            blink = .71f;
+            blink = .51f;
         }
         public string ParseRegularChar(string keyname, bool shifted)
         {
