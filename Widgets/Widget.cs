@@ -106,5 +106,24 @@ namespace MonoGUI
             wrapped += text[start..];
             return wrapped;
         }
+        // Trims and ellipses
+        public static string LimitString(string text, SpriteFont font, float width)
+        {
+            // If it fits
+            if (font.MeasureString(text).X < width) { return text; }
+
+            // Cutting off
+            int end = text.Length - 1;
+            while (text[..end].Length > 0 && font.MeasureString($"{text[..end]}...").X > width) { end--; }
+            return $"{text[..end]}...";
+        }
+        public static string LimitLines(string text, SpriteFont font, float height)
+        {
+            // Height
+            float lineHeight = font.MeasureString(text.Split('\n')[0]).Y;
+
+            int maxLines = (int)Math.Max((height / lineHeight) - 1, 0);
+            return string.Join('\n', text.Split('\n')[..maxLines]) + "\n...";
+        }
     }
 }

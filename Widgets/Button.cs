@@ -15,7 +15,8 @@ namespace MonoGUI
     public class Button : Widget
     {
         public Xna.Vector2 Dimensions { get; private set; }
-        public string Text { get; set; }
+        public string Text { get; private set; }
+        private string CutoffText { get; set; }
         public Rectangle Rect
         {
             get { return new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y); }
@@ -49,8 +50,9 @@ namespace MonoGUI
             Last = false;
             Shift = shift;
 
-            Xna.Vector2 textDim = Font != null ? Font.MeasureString(Text) : new(0, 0);
             Xna.Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
+            CutoffText = Font != null ? LimitString(text, Font, inside.X - 2) : Text;
+            Xna.Vector2 textDim = Font != null ? Font.MeasureString(CutoffText) : new(0, 0);
             offset = Xna.Vector2.Floor((inside - textDim) / 2);
         }
         public override void Update()
@@ -87,7 +89,7 @@ namespace MonoGUI
             // Text
             if (Font != null)
             {
-                Gui.Batch.DrawString(Font, Text, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
+                Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
             } else if (Text != "")
             {
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
@@ -100,6 +102,8 @@ namespace MonoGUI
             Xna.Vector2 textDim = Font != null ? Font.MeasureString(Text) : new(0, 0);
             Xna.Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
             offset = Xna.Vector2.Floor((inside - textDim) / 2);
+            // Cutoff text
+            CutoffText = Font != null ? LimitString(text, Font, inside.X) : Text;
         }
     }
 }

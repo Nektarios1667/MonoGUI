@@ -10,6 +10,7 @@ using MonoGame.Extended;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoGUI
 {
@@ -28,7 +29,7 @@ namespace MonoGUI
             get { return _text; }
             set {
                 _text = value;
-                Softwrapped = Font != null ? SoftwrapWords(value, Font, Inside) : value;
+                Softwrapped = Font != null ? LimitLines(SoftwrapWords(value, Font, Inside), Font, Inside.Y) : value;
                 Inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
             }
         }
@@ -52,7 +53,7 @@ namespace MonoGUI
             Font = font == default ? gui.Arial : font;
             Foreground = foreground;
             Inside = new(Dimensions.X - Border * 2 - 4, Dimensions.Y - Border * 2 - 4);
-            Softwrapped = Font != null ? SoftwrapWords(text, Font, Inside) : text;
+            Softwrapped = Font != null ? LimitLines(SoftwrapWords(text, Font, Inside), Font, Inside.Y) : text;
             Delay = delay;
         }
         public override void Update()
