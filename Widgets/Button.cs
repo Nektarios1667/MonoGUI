@@ -15,7 +15,7 @@ namespace MonoGUI
     public class Button : Widget
     {
         public Xna.Vector2 Dimensions { get; private set; }
-        public string Text { get; private set; }
+        public string Text { get; set; }
         public Rectangle Rect
         {
             get { return new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y); }
@@ -90,6 +90,14 @@ namespace MonoGUI
             {
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
             }
+        }
+        public void SetText(string text)
+        {
+            Text = text;
+            // Text dim
+            Xna.Vector2 textDim = Font != null ? Font.MeasureString(Text) : new(0, 0);
+            Xna.Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
+            offset = Xna.Vector2.Floor((inside - textDim) / 2);
         }
     }
 }

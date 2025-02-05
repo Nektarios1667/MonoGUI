@@ -16,6 +16,7 @@ namespace MonoGUI
         public KeyboardState KeyState { get; set; }
         public float Delta { get; private set; }
         public Texture2D? CircleOutline { get; private set; }
+        public Texture2D? ArrowDown { get; private set; }
         public SpriteFont? Arial { get; private set; }
         private bool _loaded { get; set; }
         public GUI(Game game, SpriteBatch spriteBatch)
@@ -50,6 +51,8 @@ namespace MonoGUI
         {
             CircleOutline = content.Load<Texture2D>("CircleOutline");
             Arial = content.Load<SpriteFont>("Arial");
+            ArrowDown = content.Load<Texture2D>("ArrowDown");
+
             _loaded = true;
         }
     }
