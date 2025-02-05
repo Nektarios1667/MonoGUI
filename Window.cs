@@ -55,7 +55,7 @@ namespace MonoGUI
                 new HorizontalSlider(Gui, new(100, 725), 100, Color.Black, new(55, 55, 55)),
                 new VerticalSlider(Gui, new(100, 750), 100, Color.Black, new(55, 55, 55)),
                 new ListBox(Gui, new(650, 50), new(100, 100), Color.Black, Color.Gray, Color.DarkGray),
-                new Dropdown(Gui, new(650, 175), new(100, 30), Color.Black, Color.Gray, Color.LightGray, Arial),
+                new Dropdown(Gui, new(650, 175), new(125, 30), Color.Black, Color.Gray, Color.LightGray, Arial),
                 new Button(Gui, new(500, 10), new(100, 30), Color.White, Color.Gray, Color.DarkGray, (Action<string>)Console.WriteLine, args: [$"Clicked..."], text: $"Button", font: Arial)
             ];
 

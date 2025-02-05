@@ -35,6 +35,7 @@ namespace MonoGUI
         public Button SelectButton { get; private set; }
         // Centering
         private Xna.Vector2 offset { get; set; }
+        private int arrowSize { get; set; }
         private bool Last { get; set; }
         public Dropdown(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 2, int border = 2, Color borderColor = default) : base(gui, location)
         {
@@ -48,7 +49,8 @@ namespace MonoGUI
             Seperation = seperation;
             Border = border;
             BorderColor = (borderColor == default ? Color.Black : borderColor);
-            SelectButton = new(Gui, location, dimensions, foreground, color, highlight, ToggleOpen, Selected, font: Font, border: Border, borderColor: BorderColor);
+            arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
+            SelectButton = new(Gui, location, dimensions, foreground, color, highlight, ToggleOpen, Selected, font: Font, border: Border, borderColor: BorderColor, shift: -arrowSize);
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + 4 + Seperation * 2 : 0;
             Open = false;
         }
@@ -84,10 +86,10 @@ namespace MonoGUI
             }
 
             // Draw arrows
-            int arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
+            arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
             Xna.Vector2 arrowLocation = new(Location.X + Dimensions.X - Border - arrowSize, Location.Y + Dimensions.Y / 2);
             float scale = Math.Min(Dimensions.X, Dimensions.Y) / 40f;
-            Gui.Batch.Draw(Gui.ArrowDown, arrowLocation, null, BorderColor, Open ? 0 : -(float)(Math.PI / 2), new(8, 5), scale, SpriteEffects.None, 0f);
+            Gui.Batch.Draw(Gui.ArrowDown, arrowLocation, null, BorderColor, Open ? 0 : 0, new(8, 5), scale, SpriteEffects.None, 0f);
         }
         public void AddItems(params string[] texts)
         {

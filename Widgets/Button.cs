@@ -30,9 +30,10 @@ namespace MonoGUI
         public object?[]? Args { get; private set; }
         public int State { get; private set; }
         public bool Last { get; private set; }
+        private int Shift { get; set; }
         // Centering
         private Xna.Vector2 offset { get; set; }
-        public Button(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, Delegate? function, string text = "", SpriteFont? font = default, object?[]? args = null, int border = 3, Color borderColor = default) : base(gui, location)
+        public Button(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, Delegate? function, string text = "", SpriteFont? font = default, object?[]? args = null, int border = 3, Color borderColor = default, int shift = 0) : base(gui, location)
         {
             Dimensions = dimensions;
             Text = text;
@@ -46,6 +47,7 @@ namespace MonoGUI
             Args = args;
             State = 0;
             Last = false;
+            Shift = shift;
 
             Xna.Vector2 textDim = Font != null ? Font.MeasureString(Text) : new(0, 0);
             Xna.Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
@@ -85,7 +87,7 @@ namespace MonoGUI
             // Text
             if (Font != null)
             {
-                Gui.Batch.DrawString(Font, Text, new(Location.X + Border + offset.X, Location.Y + Border + offset.Y), Foreground);
+                Gui.Batch.DrawString(Font, Text, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
             } else if (Text != "")
             {
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
