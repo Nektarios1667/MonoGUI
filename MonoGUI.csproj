@@ -24,7 +24,7 @@
   </ItemGroup>
 	<PropertyGroup>
 		<PackageId>MonoGUI</PackageId>
-		<Version>1.1.2</Version>
+		<Version>1.2.2</Version>
 		<Authors>Nektarios</Authors>
 		<Description>A simple GUI toolkit for MonoGame with many customizable widgets.</Description>
 		<PackageTags>monogame;gui</PackageTags>
