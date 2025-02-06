@@ -9,12 +9,13 @@ MonoGUI is a C# library designed for creating simple graphical user interfaces m
 
 ## Widgets
 - Button
+- Dropdown
 - HorizontalSlider
 - InfoBox
 - Input
+- Label
 - ListBox
 - Popup
-- Text
 - VerticalSlider
 
 ## Installation
