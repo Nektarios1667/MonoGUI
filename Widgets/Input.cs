@@ -31,8 +31,9 @@ namespace MonoGUI
         public Color BorderColor { get; private set; }
         public object?[]? Args { get; private set; }
         public bool Selected { get; private set; }
-        public int Cursor { get; private set; }
-        public Keys[] Previous { get; private set; }
+        private int Cursor { get; set; }
+        private Keys[] PreviousKeys { get; set; }
+        private bool ClickedLast { get; set; }
         private float blink { get; set; }
         private int cursorX { get; set; }
         // Centering
@@ -104,7 +105,8 @@ namespace MonoGUI
             BorderColor = borderColor == default ? Color.Black : borderColor;
             Selected = false;
             Cursor = 0;
-            Previous = [];
+            PreviousKeys = [];
+            ClickedLast = false;
         }
         public override void Update()
         {
@@ -118,11 +120,13 @@ namespace MonoGUI
 
             // Clicking
             MouseState mouseState = Gui.MouseState;
-            if (mouseState.LeftButton == ButtonState.Pressed)
-            {
+            if (mouseState.LeftButton == ButtonState.Pressed && !ClickedLast)
+            {                
+                // Checks
                 if (PointRectCollide(Location, Dimensions, mouseState.Position)) { Selected = true; }
                 else { Selected = false; }
             }
+            ClickedLast = mouseState.LeftButton == ButtonState.Pressed;
 
             // Typing
             Keys[] pressed = Gui.KeyState.GetPressedKeys();
@@ -132,7 +136,7 @@ namespace MonoGUI
             foreach (Keys key in pressed)
             {
                 string keyname = key.ToString();
-                if (!Previous.Contains(key) && (Textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
+                if (!PreviousKeys.Contains(key) && (Textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
                 {
                     // Uppercase letter
                     if (keyname.Length == 1 && shifted) { Text = Text.Insert(Cursor, keyname); }
@@ -156,7 +160,7 @@ namespace MonoGUI
                     Recalculate();
                 }
             }
-            Previous = pressed;
+            PreviousKeys = pressed;
         }
         public override void Draw()
         {

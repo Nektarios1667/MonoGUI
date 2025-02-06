@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,9 +6,7 @@ using MonoGame.Extended.Input;
 using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoGUI
 {
@@ -50,8 +46,7 @@ namespace MonoGUI
             BarSize = barSize;
             BarDimensions = new(dimensions.X, barSize);
             Visible = true;
-            LastBarPosition = new(-1, -1);
-            Previous = new();
+            Previous = default;
             TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
             Button closeButton = new(gui, new(location.X + dimensions.X - 50, location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             TitleFont = titleFont == default ? gui.Arial : titleFont;
@@ -66,21 +61,21 @@ namespace MonoGUI
             // Hidden
             if (!Visible) { return; }
 
-            // Hovering
+            // Clicking
             MouseState mouseState = Gui.MouseState;
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            if (mouseState.LeftButton == ButtonState.Pressed && (Previous.LeftButton != ButtonState.Pressed || Dragging))
             {
-                // Clicks
-                if (PointRectCollide(Location, BarDimensions, mouseState.Position) || Dragging)
+                // Dragging
+                if (PointRectCollide(BarRect, mouseState.Position) || Dragging)
                 {
-                    // Dragging
-                    if (Previous.LeftButton == ButtonState.Pressed && LastBarPosition.X != -1) {
-                        Xna.Vector2 delta = mouseState.Position.ToVector2() - LastBarPosition;
+                    if (Previous != default) // Check if the first time clicking
+                    {
+                        // Move items
+                        Xna.Vector2 delta = mouseState.Position.ToVector2() - Previous.Position.ToVector2();
                         foreach (Widget widget in Widgets) { widget.Location += delta; }
                         Location += delta;
                         Dragging = true;
                     }
-                    LastBarPosition = mouseState.Position.ToVector2();
                 }
             } else { Dragging = false; }
 
