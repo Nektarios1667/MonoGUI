@@ -25,10 +25,10 @@ namespace MonoGUI
         public Xna.Color Highlight { get; private set; }
         public SpriteFont? Font { get; private set; }
         public Color Foreground { get; private set; }
-        public Delegate? Function { get; private set; }
+        public Delegate? Function { get; set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
-        public object?[]? Args { get; private set; }
+        public object?[]? Args { get; set; }
         public int State { get; private set; }
         public bool Last { get; private set; }
         private int Shift { get; set; }

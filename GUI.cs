@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,6 +55,14 @@ namespace MonoGUI
             ArrowDown = content.Load<Texture2D>("ArrowDown");
 
             _loaded = true;
+        }
+        // Layers
+        public void BringToBack(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.Remove(moving); Widgets.Insert(0, moving); } }
+        public void BringToBack(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(0, widget); }}
+        public void BringToFont(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.Remove(moving); Widgets.Append(moving); } }
+        public void BringToFront(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Append(widget); } }
+        public void BringToIndex(Widget widget, int idx) {
+            if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(Math.Clamp(idx, 0, Widgets.Count - 1), widget); }
         }
     }
 }

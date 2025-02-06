@@ -20,6 +20,11 @@ namespace MonoGUI
         public Widget(GUI gui, Xna.Vector2 location) { Gui = gui; Location = location; Visible = true; }
         public abstract void Update();
         public abstract void Draw();
+        
+        // Show and hide
+        public virtual void Show() { Visible = true; }
+        public virtual void Hide() { Visible = false; }
+        public virtual void ToggleShow() { Visible = !Visible; }
 
         // Static methods
 
@@ -65,7 +70,6 @@ namespace MonoGUI
 
         // Nofunc
         public static void NoFunc(params object[] _) {}
-        public static void NoFunc() { }
 
         // Softwraps
         public static string Softwrap(string text, SpriteFont font, Xna.Vector2 dimensions)
