@@ -129,5 +129,16 @@ namespace MonoGUI
             int maxLines = (int)Math.Max((height / lineHeight) - 1, 0);
             return string.Join('\n', text.Split('\n')[..maxLines]) + "\n...";
         }
+
+        // Drawing
+        public static void DrawX(SpriteBatch batch, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, int thickness = 2)
+        {
+            //  "\" line
+            batch.DrawLine(new(location.X - dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X + dimensions.X / 2, location.Y + dimensions.Y / 2),
+                           color, thickness);
+            //  "/" line
+            batch.DrawLine(new(location.X + dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X - dimensions.X / 2, location.Y + dimensions.Y / 2),
+                           color, thickness);
+        }
     }
 }
