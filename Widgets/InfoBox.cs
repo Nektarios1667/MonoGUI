@@ -21,7 +21,6 @@ namespace MonoGUI
         public Xna.Color Color { get; private set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
-        private string _text { get; set; }
         public string Text { get; set; }
         public SpriteFont? Font { get; set; }
         public Color Foreground { get; set; }
@@ -39,12 +38,15 @@ namespace MonoGUI
             Border = border;
             BorderColor = (borderColor == null ? Color.Black : (Color)borderColor);
             Visible = true;
-            _text = text;
+            Text = text;
             Font = font == default ? gui.Arial : font;
             Foreground = foreground;
-            Inside = new(Dimensions.X - Border * 2 - 4, Dimensions.Y - Border * 2 - 4);
-            Softwrapped = Font != null ? LimitLines(SoftwrapWords(text, Font, Inside), Font, Inside.Y) : text;
             Delay = delay;
+
+            // Other variables
+            Inside = new(Dimensions.X - Border * 2 - 2, Dimensions.Y - Border * 2 - 2);
+            Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+            Softwrapped =  Font != null ? LimitLines(SoftwrapWords(Text, Font, Inside), Font, Inside.Y) : Text;
         }
         public override void Update()
         {
@@ -54,7 +56,7 @@ namespace MonoGUI
                 if (Time >= Delay) { Visible = true; }
                 else { Time += Gui.Delta; }
             }
-            else { Visible = false; Time = 0f; }
+            else { Visible = false; Time = 0; }
         }
         public override void Draw()
         {

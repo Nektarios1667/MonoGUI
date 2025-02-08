@@ -42,12 +42,14 @@ namespace MonoGUI
             Visible = true;
             Previous = default;
             TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
-            Button closeButton = new(gui, new(location.X + dimensions.X - 50, location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             TitleFont = titleFont == default ? gui.Arial : titleFont;
             Title = title;
+
+            // Builtin
             Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
-            //                                                                                                          width      button   border   padding
-            Label titleBox = new(gui, new(location.X + 10, location.Y + 4), TitleColor, LimitString(title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), titleFont);
+            BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
+            Label titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
+            Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             Widgets = [closeButton, titleBox];
 
         }
@@ -67,8 +69,14 @@ namespace MonoGUI
                     {
                         // Move items
                         Xna.Vector2 delta = mouseState.Position.ToVector2() - Previous.Position.ToVector2();
-                        foreach (Widget widget in Widgets) { widget.Location += delta; }
+                        foreach ( Widget widget in Widgets) { widget.Location += delta; }
+
+                        // Update self
                         Location += delta;
+                        Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+                        BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
+
+                        // Drag
                         Dragging = true;
                     }
                 } else if (!PointRectCollide(Rect, mouseState.Position) && Previous.LeftButton != ButtonState.Pressed) { Visible = false; }
@@ -97,8 +105,6 @@ namespace MonoGUI
         }
         public override void Reload()
         {
-            Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
-            BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
             Label titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
             Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             Widgets = [closeButton, titleBox];

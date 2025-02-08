@@ -57,7 +57,7 @@ namespace MonoGUI
                 new ListBox(Gui, new(650, 50), new(100, 100), Color.Black, Color.Gray, Color.DarkGray),
                 new Dropdown(Gui, new(650, 175), new(125, 30), Color.Black, Color.Gray, Color.LightGray, Arial),
                 new Button(Gui, new(500, 10), new(100, 30), Color.White, Color.Gray, Color.DarkGray, Widget.NoFunc, text: $"Button---------------", font: Arial),
-                new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window---------------------------", Arial),
+                new Popup(Gui, new(100, 135), new(200, 200), Color.Gray, "Popup Window---------------------------", Arial),
                 new Checkbox(Gui, new(650, 250), 25, Color.White, Color.Gray, Color.DarkGray),
             ];
             // Add items
