@@ -26,12 +26,11 @@ namespace MonoGUI
         public int Size { get; private set; }
         private int State { get; set; }
         public float Value { get; private set; }
-        private bool Dragging { get; set; }
-        private MouseState Previous { get; set; }
-        private Xna.Vector2 LastCirclePosition { get; set; }
+        // Private
+        private bool dragging = false;
+        private MouseState previousState;
         public HorizontalSlider(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
         {
-            Dragging = false;
             Length = length;
             Color = color;
             Highlight = highlight;
@@ -48,15 +47,15 @@ namespace MonoGUI
 
             // Hovering
             MouseState mouseState = Gui.MouseState;
-            if (PointCircleCollide(mouseState.Position, new Xna.Vector2(Location.X + Value * Length, Location.Y), Size) || Dragging)
+            if (PointCircleCollide(mouseState.Position, new Xna.Vector2(Location.X + Value * Length, Location.Y), Size) || dragging)
             {
                 // Clicking
-                if (mouseState.LeftButton == ButtonState.Pressed && (Previous.LeftButton != ButtonState.Pressed || Dragging))
+                if (mouseState.LeftButton == ButtonState.Pressed && (previousState.LeftButton != ButtonState.Pressed || dragging))
                 {
                     // Update
                     State = 2;
                     float val = Math.Clamp((mouseState.Position.X - Location.X) / Length, 0, 1);
-                    Dragging = true;
+                    dragging = true;
 
                     // Change
                     if (val != Value)
@@ -64,13 +63,11 @@ namespace MonoGUI
                         Value = val;
                         OnValueChanged(Value);
                     }
-                    LastCirclePosition = mouseState.Position.ToVector2();
+                } else { dragging = false; State = 1; }
+            } else { dragging = false; State = 0; }
 
-                } else { Dragging = false; State = 1; }
-            } else { Dragging = false; State = 0; }
-
-            // Previous
-            Previous = mouseState;
+            // previousState
+            previousState = mouseState;
         }
 
         public override void Draw()

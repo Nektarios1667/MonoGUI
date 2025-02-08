@@ -28,8 +28,8 @@ namespace MonoGUI
         public string Softwrapped { get; set; }
         public Xna.Vector2 Inside { get; set; }
         public float Delay { get; set; }
-        private float Time { get; set; }
-        // Centering
+        // Private
+        private float time;
         public InfoBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Rectangle activation, Color color, Color foreground, string text, SpriteFont? font = default, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
         {
             Dimensions = dimensions;
@@ -53,10 +53,10 @@ namespace MonoGUI
             // Hovering
             MouseState mouseState = Gui.MouseState;
             if (PointRectCollide(Activation, mouseState.Position)) {
-                if (Time >= Delay) { Visible = true; }
-                else { Time += Gui.Delta; }
+                if (time >= Delay) { Visible = true; }
+                else { time += Gui.Delta; }
             }
-            else { Visible = false; Time = 0; }
+            else { Visible = false; time = 0; }
         }
         public override void Draw()
         {

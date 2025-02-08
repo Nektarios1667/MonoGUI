@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using MonoGame.Extended.Particles;
 using MonoGame.Extended.Graphics;
 using System.Drawing;
+using Microsoft.Xna.Framework.Input;
 
 namespace MonoGUI
 {
@@ -23,13 +24,12 @@ namespace MonoGUI
         public Xna.Color BorderColor { get; private set; }
         public List<Button> Items { get; private set; }
         public string Selected { get; private set; }
-        private int itemHeight { get; set; }
         public bool Open { get; set; }
         public Button SelectButton { get; private set; }
-        // Centering
-        private Xna.Vector2 offset { get; set; }
-        private int arrowSize { get; set; }
-        private bool Last { get; set; }
+        // private
+        private int arrowSize;
+        private MouseState previousState;
+        private int itemHeight;
         public Dropdown(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 2, int border = 2, Xna.Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;

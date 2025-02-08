@@ -29,9 +29,8 @@ namespace MonoGUI
         public int CheckThickness { get; private set; }
         private Xna.Vector2 CheckLocation { get; set; }
         private Xna.Vector2 CheckDimensions { get; set; }
-        private bool Last { get; set; }
-        // Centering
-        private Xna.Vector2 offset { get; set; }
+        // Private
+        private MouseState previousState;
         public Checkbox(GUI gui, Xna.Vector2 location, int size, Color foreground, Xna.Color color, Xna.Color highlight, int border = 3, Color borderColor = default, int checkThickness = 4) : base(gui, location)
         {
             Size = size;
@@ -57,14 +56,14 @@ namespace MonoGUI
             if (PointRectCollide(Location, new(Size, Size), mouseState.Position))
             {
                 // Clicking
-                if (pressed && !Last)
+                if (pressed && previousState.LeftButton != ButtonState.Pressed)
                 {
                     Checked = !Checked;
                     State = 2;
                 }
                 else { State = 1; }
             } else { State = 0; }
-            Last = pressed;
+            previousState = mouseState;
         }
         public override void Draw()
         {

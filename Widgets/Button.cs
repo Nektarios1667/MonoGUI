@@ -29,10 +29,10 @@ namespace MonoGUI
         public Color BorderColor { get; private set; }
         public object?[]? Args { get; set; }
         public int State { get; private set; }
-        public bool Last { get; private set; }
-        private int Shift { get; set; }
-        // Centering
-        private Xna.Vector2 offset { get; set; }
+        public int Shift { get; private set; }
+        // Private
+        private Xna.Vector2 offset;
+        private MouseState previousState;
         public Button(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, Delegate? function, string text = "", SpriteFont? font = default, object?[]? args = null, int border = 3, Color borderColor = default, int shift = 0) : base(gui, location)
         {
             Dimensions = dimensions;
@@ -46,7 +46,6 @@ namespace MonoGUI
             BorderColor = (borderColor == default ? Color.Black : borderColor);
             Args = args;
             State = 0;
-            Last = false;
             Shift = shift;
 
             Xna.Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
@@ -65,14 +64,14 @@ namespace MonoGUI
             if (PointRectCollide(Location, new(Dimensions.X - Border, Dimensions.Y - Border), mouseState.Position))
             {
                 // Clicking
-                if (pressed && !Last)
+                if (pressed && previousState.LeftButton != ButtonState.Pressed)
                 {
                     State = 2;
                     Function?.DynamicInvoke(Args);
                 }
                 else { State = 1; }
             } else { State = 0; }
-            Last = pressed;
+            previousState = mouseState;
         }
         public override void Draw()
         {

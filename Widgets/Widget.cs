@@ -23,11 +23,12 @@ namespace MonoGUI
         public abstract void Draw();
         public virtual void Reload() { }
         // Modify
-        public void Modify(string property, object value)
+        public void Modify(string property, object value, bool allowHidden = false)
         {
             // Get property
             PropertyInfo? propertyInfo = GetType().GetProperty(property);
-            if (propertyInfo == null) { throw new ArgumentException($"{GetType()} widget does not have property {property}"); }
+            // If property does not exist or its hidden and allowHidden is disabled
+            if (propertyInfo == null || (!char.IsUpper(property[0]) && !allowHidden)) { throw new ArgumentException($"{GetType()} widget does not have property {property}"); }
 
             // Check if new value and set
             if (!object.Equals(propertyInfo.GetValue(this), value)) { propertyInfo.SetValue(this, value); };

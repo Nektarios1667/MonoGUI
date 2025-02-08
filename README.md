@@ -67,7 +67,7 @@ protected override void Update(GameTime gameTime)
     // Exit
     if (KeyState.IsKeyDown(Keys.Escape)) { Exit(); }
 
-    // Time since last frame in seconds
+    // Time since previous frame in seconds
     DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
     
     // Update GUI

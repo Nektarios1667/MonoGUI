@@ -27,10 +27,8 @@ namespace MonoGUI
         public Color BorderColor { get; private set; }
         public List<Button> Items { get; private set; }
         public string Selected { get; private set; }
-        private int itemHeight { get; set; }
-        // Centering
-        private Xna.Vector2 offset { get; set; }
-        private bool Last { get; set; }
+        // Private
+        private int itemHeight;
         public ListBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;

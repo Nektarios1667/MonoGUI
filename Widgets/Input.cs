@@ -32,14 +32,15 @@ namespace MonoGUI
         public Color BorderColor { get; private set; }
         public object?[]? Args { get; private set; }
         public bool Selected { get; private set; }
-        private int Cursor { get; set; }
-        private Keys[] PreviousKeys { get; set; }
-        private bool ClickedLast { get; set; }
-        private float blink { get; set; }
-        private int cursorX { get; set; }
-        // Centering
-        private int Textsize { get; set; }
-        private Xna.Vector2 Charsize { get; set; }
+        public int Cursor { get; private set; }
+        // Private
+        private Keys[] previousKeys;
+        private MouseState previousState;
+        private float blink = 0;
+        private int cursorX = 0;
+        private int textsize = 0;
+        private Xna.Vector2 charsize;
+        // Key mapping
         private readonly Dictionary<string, char> specialKeys = new()
         {
             ["OemPeriod"] = '.',
@@ -94,10 +95,7 @@ namespace MonoGUI
         {
             Dimensions = dimensions;
             Text = "";
-            Textsize = 0;
-            blink = 0;
-            cursorX = 0;
-            Charsize = font != null ? font.MeasureString("_") : new(0, 0);
+            charsize = font != null ? font.MeasureString("_") : new(0, 0);
             Font = font == default ? gui.Arial : font;
             Foreground = foreground;
             Color = color;
@@ -106,8 +104,7 @@ namespace MonoGUI
             BorderColor = borderColor == default ? Color.Black : borderColor;
             Selected = false;
             Cursor = 0;
-            PreviousKeys = [];
-            ClickedLast = false;
+            previousKeys = [];
         }
         public override void Update()
         {
@@ -121,13 +118,13 @@ namespace MonoGUI
 
             // Clicking
             MouseState mouseState = Gui.MouseState;
-            if (mouseState.LeftButton == ButtonState.Pressed && !ClickedLast)
+            if (mouseState.LeftButton == ButtonState.Pressed && previousState.LeftButton != ButtonState.Pressed)
             {                
                 // Checks
                 if (PointRectCollide(Location, Dimensions, mouseState.Position)) { Selected = true; }
                 else { Selected = false; }
             }
-            ClickedLast = mouseState.LeftButton == ButtonState.Pressed;
+            previousState = mouseState;
 
             // Typing
             Keys[] pressed = Gui.KeyState.GetPressedKeys();
@@ -137,7 +134,7 @@ namespace MonoGUI
             foreach (Keys key in pressed)
             {
                 string keyname = key.ToString();
-                if (!PreviousKeys.Contains(key) && (Textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
+                if (!previousKeys.Contains(key) && (textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
                 {
                     // Uppercase letter
                     if (keyname.Length == 1 && shifted) { Text = Text.Insert(Cursor, keyname); }
@@ -161,7 +158,7 @@ namespace MonoGUI
                     Reload();
                 }
             }
-            PreviousKeys = pressed;
+            previousKeys = pressed;
         }
         public override void Draw()
         {
@@ -183,13 +180,13 @@ namespace MonoGUI
             }
 
             // Cursor
-            if (blink >= .5) { Gui.Batch.DrawLine(Location.X + Border + cursorX, Location.Y + Border + 1, Location.X + Border + cursorX, Location.Y + Charsize.Y + 2, Color.Black, 2); }
+            if (blink >= .5) { Gui.Batch.DrawLine(Location.X + Border + cursorX, Location.Y + Border + 1, Location.X + Border + cursorX, Location.Y + charsize.Y + 2, Color.Black, 2); }
         }
         public override void Reload()
         {
-            Charsize = Font != null ? Font.MeasureString("_") : new(0, 0);
+            charsize = Font != null ? Font.MeasureString("_") : new(0, 0);
             // Recalculate text size
-            Textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
+            textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
             cursorX = Font != null ? (int)Font.MeasureString(Text[..Cursor]).X : 0;
             blink = .51f;
         }
