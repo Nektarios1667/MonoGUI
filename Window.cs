@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Linq.Expressions;
-using System.Runtime.Intrinsics.X86;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
 namespace MonoGUI
 {
     public class Window : Game
