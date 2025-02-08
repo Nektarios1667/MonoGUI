@@ -8,7 +8,6 @@ using MonoGame.Extended.Input;
 using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace MonoGUI
 {
@@ -95,15 +94,14 @@ namespace MonoGUI
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
             }
         }
-        public void SetText(string text)
+        public override void Reload()
         {
-            Text = text;
             // Text dim
             Xna.Vector2 textDim = Font != null ? Font.MeasureString(Text) : new(0, 0);
             Xna.Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
             offset = Xna.Vector2.Floor((inside - textDim) / 2);
             // Cutoff text
-            CutoffText = Font != null ? LimitString(text, Font, inside.X) : Text;
+            CutoffText = Font != null ? LimitString(Text, Font, inside.X) : Text;
         }
     }
 }

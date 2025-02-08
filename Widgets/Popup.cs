@@ -13,10 +13,7 @@ namespace MonoGUI
     public class Popup : Widget
     {
         public Xna.Vector2 Dimensions { get; private set; }
-        public Rectangle Rect
-        {
-            get { return new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y); }
-        }
+        public Rectangle Rect { get; private set; }
         public Xna.Color Color { get; private set; }
         public Delegate? Function { get; private set; }
         public int Border { get; private set; }
@@ -26,10 +23,7 @@ namespace MonoGUI
         public Xna.Vector2 BarDimensions { get; private set; }
         public Xna.Vector2 LastBarPosition { get; private set; }
         public MouseState Previous { get; private set; }
-        public Rectangle BarRect
-        {
-            get { return new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize); }
-        }
+        public Rectangle BarRect { get; private set; }
         private bool Dragging { get; set; }
         public List<Widget> Widgets { get; set; }
         public string Title { get; set; }
@@ -51,6 +45,7 @@ namespace MonoGUI
             Button closeButton = new(gui, new(location.X + dimensions.X - 50, location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             TitleFont = titleFont == default ? gui.Arial : titleFont;
             Title = title;
+            Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
             //                                                                                                          width      button   border   padding
             Label titleBox = new(gui, new(location.X + 10, location.Y + 4), TitleColor, LimitString(title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), titleFont);
             Widgets = [closeButton, titleBox];
@@ -100,7 +95,14 @@ namespace MonoGUI
             // Outline
             Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
         }
-
+        public override void Reload()
+        {
+            Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+            BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
+            Label titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
+            Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
+            Widgets = [closeButton, titleBox];
+        }
         public void AddWidgets(params Widget[] widgets) { foreach (Widget widget in widgets) { Widgets.Add(widget); } }
 
         // static

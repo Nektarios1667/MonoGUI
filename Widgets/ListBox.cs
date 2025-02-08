@@ -84,6 +84,10 @@ namespace MonoGUI
                 item.Draw();
             }
         }
+        public override void Reload()
+        {
+            itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
+        }
         public void AddItems(params string[] texts)
         {
             foreach (string text in texts)

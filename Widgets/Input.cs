@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Collections;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoGUI
 {
@@ -39,7 +40,7 @@ namespace MonoGUI
         // Centering
         private int Textsize { get; set; }
         private Xna.Vector2 Charsize { get; set; }
-        private Dictionary<string, char> specialKeys = new()
+        private readonly Dictionary<string, char> specialKeys = new()
         {
             ["OemPeriod"] = '.',
             ["OemComma"] = ',',
@@ -64,7 +65,7 @@ namespace MonoGUI
             ["D9"] = '9',
             ["D0"] = '0',
         };
-        private Dictionary<string, char> upperSymbols = new()
+        private readonly Dictionary<string, char> upperSymbols = new()
         {
             ["D1"] = '!',
             ["D2"] = '@',
@@ -157,7 +158,7 @@ namespace MonoGUI
                     // Every taken key other than backspace, left arrow, and right arrow adds a char
                     if (keyname == "Back") { Cursor--; }
                     else if (!controlKeys.Contains(keyname)) { Cursor++; }
-                    Recalculate();
+                    Reload();
                 }
             }
             PreviousKeys = pressed;
@@ -184,12 +185,12 @@ namespace MonoGUI
             // Cursor
             if (blink >= .5) { Gui.Batch.DrawLine(Location.X + Border + cursorX, Location.Y + Border + 1, Location.X + Border + cursorX, Location.Y + Charsize.Y + 2, Color.Black, 2); }
         }
-        public void Recalculate()
+        public override void Reload()
         {
-            if (Font == null) { return; }
+            Charsize = Font != null ? Font.MeasureString("_") : new(0, 0);
             // Recalculate text size
             Textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
-            cursorX = (int)Font.MeasureString(Text[..Cursor]).X;
+            cursorX = Font != null ? (int)Font.MeasureString(Text[..Cursor]).X : 0;
             blink = .51f;
         }
         public string ParseRegularChar(string keyname, bool shifted)

@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Linq;
-using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
 using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using MonoGame.Extended.Particles;
 using MonoGame.Extended.Graphics;
-using static System.Formats.Asn1.AsnWriter;
+using System.Drawing;
 
 namespace MonoGUI
 {
@@ -24,10 +17,10 @@ namespace MonoGUI
         public Xna.Color Color { get; private set; }
         public Xna.Color Highlight { get; private set; }
         public SpriteFont? Font { get; private set; }
-        public Color Foreground { get; private set; }
+        public Xna.Color Foreground { get; private set; }
         public int Seperation { get; private set; }
         public int Border { get; private set; }
-        public Color BorderColor { get; private set; }
+        public Xna.Color BorderColor { get; private set; }
         public List<Button> Items { get; private set; }
         public string Selected { get; private set; }
         private int itemHeight { get; set; }
@@ -37,7 +30,7 @@ namespace MonoGUI
         private Xna.Vector2 offset { get; set; }
         private int arrowSize { get; set; }
         private bool Last { get; set; }
-        public Dropdown(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 2, int border = 2, Color borderColor = default) : base(gui, location)
+        public Dropdown(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 2, int border = 2, Xna.Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
@@ -48,7 +41,7 @@ namespace MonoGUI
             Highlight = highlight;
             Seperation = seperation;
             Border = border;
-            BorderColor = (borderColor == default ? Color.Black : borderColor);
+            BorderColor = (borderColor == default ? Xna.Color.Black : borderColor);
             arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
             SelectButton = new(Gui, location, dimensions, foreground, color, highlight, ToggleOpen, Selected, font: Font, border: Border, borderColor: BorderColor, shift: -arrowSize + 2);
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + 4 + Seperation * 2 : 0;
@@ -74,7 +67,7 @@ namespace MonoGUI
             if (!Visible) { return; }
             if (Font == null || Gui.ArrowDown == null) { return; }
 
-            Rectangle rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+            Xna.Rectangle rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
 
             // Draw selection button
             SelectButton.Draw();
@@ -89,7 +82,14 @@ namespace MonoGUI
             arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
             Xna.Vector2 arrowLocation = new(Location.X + Dimensions.X - Border / 2 - arrowSize, Location.Y + Dimensions.Y / 2);
             float scale = Math.Min(Dimensions.X, Dimensions.Y) / 40f;
-            Gui.Batch.Draw(Gui.ArrowDown, arrowLocation, null, BorderColor, Open ? 0 : 0, new(8, 5), scale, SpriteEffects.None, 0f);
+            Gui.Batch.Draw(Gui.ArrowDown, arrowLocation, null, BorderColor, Open ? 0 : 0, new Xna.Vector2(8, 5), scale, SpriteEffects.None, 0f);
+        }
+        public override void Reload()
+        {
+            itemHeight = Font != null ? (int)Font.MeasureString("|").Y + 4 + Seperation * 2 : 0;
+            arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
+            // Selectbutton updates
+            SelectButton = new(Gui, Location, Dimensions, Foreground, Color, Highlight, ToggleOpen, Selected, font: Font, border: Border, borderColor: BorderColor, shift: -arrowSize + 2);
         }
         public void AddItems(params string[] texts)
         {
@@ -101,7 +101,7 @@ namespace MonoGUI
             }
         }
         public void ToggleOpen() { Open = !Open; }
-        public void SelectItem(string item) { Selected = item; SelectButton.SetText(LimitString(item, Font, Dimensions.X - Border - arrowSize * 2));  OnItemSelected(item); Open = false; }
+        public void SelectItem(string item) { Selected = item; SelectButton.Modify("Text", LimitString(item, Font, Dimensions.X - Border - arrowSize * 2));  OnItemSelected(item); Open = false; }
         // When changed value
         public virtual void OnItemSelected(string item)
         {

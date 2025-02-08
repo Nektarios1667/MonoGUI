@@ -17,22 +17,12 @@ namespace MonoGUI
     public class InfoBox : Widget
     {
         public Xna.Vector2 Dimensions { get; private set; }
-        public Rectangle Rect
-        {
-            get { return new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y); }
-        }
+        public Rectangle Rect { get; private set; }
         public Xna.Color Color { get; private set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
         private string _text { get; set; }
-        public string Text {
-            get { return _text; }
-            set {
-                _text = value;
-                Softwrapped = Font != null ? LimitLines(SoftwrapWords(value, Font, Inside), Font, Inside.Y) : value;
-                Inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
-            }
-        }
+        public string Text { get; set; }
         public SpriteFont? Font { get; set; }
         public Color Foreground { get; set; }
         public Xna.Rectangle Activation { get; set; }
@@ -77,6 +67,12 @@ namespace MonoGUI
             Gui.Batch.DrawString(Font, Softwrapped, new(Location.X + Border + 2, Location.Y + Border + 2), Foreground);
             // Outline
             Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
+        }
+        public override void Reload()
+        {
+            Softwrapped = Font != null ? LimitLines(SoftwrapWords(Text, Font, Inside), Font, Inside.Y) : Text;
+            Inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
+            Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
         }
     }
 }

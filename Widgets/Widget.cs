@@ -9,6 +9,7 @@ using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace MonoGUI
 {
@@ -20,7 +21,21 @@ namespace MonoGUI
         public Widget(GUI gui, Xna.Vector2 location) { Gui = gui; Location = location; Visible = true; }
         public abstract void Update();
         public abstract void Draw();
-        
+        public virtual void Reload() { }
+        // Modify
+        public void Modify(string property, object value)
+        {
+            // Get property
+            PropertyInfo? propertyInfo = GetType().GetProperty(property);
+            if (propertyInfo == null) { throw new ArgumentException($"{GetType()} widget does not have property {property}"); }
+
+            // Check if new value and set
+            if (!object.Equals(propertyInfo.GetValue(this), value)) { propertyInfo.SetValue(this, value); };
+
+            // Relaod needed info
+            Reload();
+        }
+
         // Show and hide
         public virtual void Show() { Visible = true; }
         public virtual void Hide() { Visible = false; }
@@ -134,11 +149,9 @@ namespace MonoGUI
         public static void DrawX(SpriteBatch batch, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, int thickness = 2)
         {
             //  "\" line
-            batch.DrawLine(new(location.X - dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X + dimensions.X / 2, location.Y + dimensions.Y / 2),
-                           color, thickness);
+            batch.DrawLine(new(location.X - dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X + dimensions.X / 2, location.Y + dimensions.Y / 2), color, thickness);
             //  "/" line
-            batch.DrawLine(new(location.X + dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X - dimensions.X / 2, location.Y + dimensions.Y / 2),
-                           color, thickness);
+            batch.DrawLine(new(location.X + dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X - dimensions.X / 2, location.Y + dimensions.Y / 2), color, thickness);
         }
     }
 }

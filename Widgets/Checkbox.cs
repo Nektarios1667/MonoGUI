@@ -14,7 +14,7 @@ namespace MonoGUI
 {
     public class Checkbox : Widget
     {
-        public int Size { get; set; }
+        public int Size { get; private set; }
         public Rectangle Rect
         {
             get { return new((int)Location.X, (int)Location.Y, Size, Size); }
@@ -27,6 +27,8 @@ namespace MonoGUI
         public bool Checked { get; private set; }
         public int State { get; private set; }
         public int CheckThickness { get; private set; }
+        private Xna.Vector2 CheckLocation { get; set; }
+        private Xna.Vector2 CheckDimensions { get; set; }
         private bool Last { get; set; }
         // Centering
         private Xna.Vector2 offset { get; set; }
@@ -40,6 +42,9 @@ namespace MonoGUI
             BorderColor = (borderColor == default ? Color.Black : borderColor);
             Checked = false;
             CheckThickness = checkThickness;
+            CheckLocation = new(Location.X + Size / 2f, Location.Y + Size / 2f);
+            int checkSize = Size - CheckThickness - Border * 2;
+            CheckDimensions = new(checkSize, checkSize);
         }
         public override void Update()
         {
@@ -71,11 +76,17 @@ namespace MonoGUI
             // Draw X
             if (Checked)
             {
-                int size = Size - CheckThickness - Border * 2;
-                DrawX(Gui.Batch, new(Location.X + Size / 2f, Location.Y + Size / 2f), new(size, size), Foreground, thickness: CheckThickness);
+                DrawX(Gui.Batch, CheckLocation, CheckDimensions, Foreground, thickness: CheckThickness);
             }
             // Outline
             Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
+        }
+        public override void Reload()
+        {
+            // Check
+            CheckLocation = new(Location.X + Size / 2f, Location.Y + Size / 2f);
+            int checkSize = Size - CheckThickness - Border * 2;
+            CheckDimensions = new(checkSize, checkSize);
         }
     }
 }
