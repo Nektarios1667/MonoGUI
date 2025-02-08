@@ -76,7 +76,7 @@ namespace MonoGUI
                         Location += delta;
                         Dragging = true;
                     }
-                } else { Visible = false; }
+                } else if (!PointRectCollide(Rect, mouseState.Position) && Previous.LeftButton != ButtonState.Pressed) { Visible = false; }
             } else { Dragging = false; }
 
             // Widgets update
