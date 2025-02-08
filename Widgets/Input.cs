@@ -39,6 +39,8 @@ namespace MonoGUI
         private float blink = 0;
         private int cursorX = 0;
         private int textsize = 0;
+        private Dictionary<Keys, float> keyHoldTimes = new();
+        private Dictionary<Keys, float> keyHoldPauses = new();
         private Xna.Vector2 charsize;
         // Key mapping
         private readonly Dictionary<string, char> specialKeys = new()
@@ -134,8 +136,17 @@ namespace MonoGUI
             foreach (Keys key in pressed)
             {
                 string keyname = key.ToString();
-                if (!previousKeys.Contains(key) && (textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
+                if ((textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
                 {
+                    // Check repeated hold
+                    if (previousKeys.Contains(key)) { keyHoldTimes[key] += Gui.Delta; }
+                    else { keyHoldTimes[key] = 0f; keyHoldPauses[key] = 0f; }
+
+                    if (keyHoldTimes[key] >= 0.5f) { keyHoldPauses[key] += Gui.Delta; }
+
+                    if (previousKeys.Contains(key) && keyHoldPauses[key] < 0.04f) { continue; }
+                    else { keyHoldPauses[key] = 0f; }
+
                     // Uppercase letter
                     if (keyname.Length == 1 && shifted) { Text = Text.Insert(Cursor, keyname); }
                     // Lowercase letter
@@ -152,6 +163,7 @@ namespace MonoGUI
                     else if (keyname == "Left" && Cursor > 0) { Cursor--; }
                     // Continue
                     else { continue; }
+
                     // Every taken key other than backspace, left arrow, and right arrow adds a char
                     if (keyname == "Back") { Cursor--; }
                     else if (!controlKeys.Contains(keyname)) { Cursor++; }
