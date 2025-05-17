@@ -1,0 +1,14 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="CopyMonoGUIContentFiles" AfterTargets="Build">
+    <!-- Copy all MonoGUI Content .xnb files from the package folder to the consuming project's output Content folder -->
+    <ItemGroup>
+      <MonoGUIContentFiles Include="$(MSBuildThisFileDirectory)..\contentFiles\any\netstandard2.0\Content\**\*.xnb" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(MonoGUIContentFiles)" 
+          DestinationFolder="$(OutputPath)Content\%(RecursiveDir)" 
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

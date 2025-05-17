@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Linq;
-using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Collections.Generic;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
@@ -66,8 +58,10 @@ namespace MonoGUI
                     }
                     previousCirclePosition = mouseState.Position.ToVector2();
 
-                } else { dragging = false; State = 1; }
-            } else { dragging = false; State = 0; }
+                }
+                else { dragging = false; State = 1; }
+            }
+            else { dragging = false; State = 0; }
 
             // previousState
             previousState = mouseState;

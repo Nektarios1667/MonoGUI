@@ -1,34 +1,33 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
-    public class HorizontalSlider : Widget
+    public class ScrollBar : Widget
     {
         public event Action<float> ValueChanged;
         public int Length { get; private set; }
         public Xna.Color Color { get; private set; }
         public Xna.Color Highlight { get; private set; }
         public Color Background { get; private set; }
-        public int Thickness { get; private set; }
-        public int Size { get; private set; }
-        private int State { get; set; }
+        public int Width { get; private set; }
+        public int State { get; private set; }
         public float Value { get; private set; }
+        public int BarSize { get; private set; }
         // Private
         private bool dragging = false;
         private MouseState previousState;
-        public HorizontalSlider(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
+        public ScrollBar(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, int barSize = 20, Color? background = null, int width = 10, int size = 7) : base(gui, location)
         {
             Length = length;
             Color = color;
             Highlight = highlight;
+            BarSize = barSize;
             Background = background ?? Color.DarkGray;
-            Thickness = thickness;
-            Size = size;
+            Width = width;
             Value = 0;
             State = 0; // 0 = nothing, 1 = hover, 2 = click
         }
@@ -39,20 +38,20 @@ namespace MonoGUI
 
             // Hovering
             MouseState mouseState = Gui.MouseState;
-            if (PointCircleCollide(mouseState.Position, new Xna.Vector2(Location.X + Value * Length, Location.Y), Size) || dragging)
+            if (PointRectCollide(new((int)Location.X, (int)(Location.Y + (Value * Length)), Width, Length), mouseState.Position) || dragging)
             {
                 // Clicking
                 if (mouseState.LeftButton == ButtonState.Pressed && (previousState.LeftButton != ButtonState.Pressed || dragging))
                 {
                     // Update
                     State = 2;
-                    float val = Math.Clamp((mouseState.Position.X - Location.X) / Length, 0, 1);
+                    float move = (mouseState.Position.Y - previousState.Position.Y) / (float)Length;
                     dragging = true;
 
                     // Change
-                    if (val != Value)
+                    if (move != 0)
                     {
-                        Value = val;
+                        Value = Math.Clamp((Value + move), 0f, 1f);
                         OnValueChanged(Value);
                     }
                 }
@@ -68,18 +67,11 @@ namespace MonoGUI
         {
             // Not drawing
             if (!Visible) { return; }
-            if (Gui.CircleOutline == null) { return; }
 
-            // Line
-            Gui.Batch.DrawLine(Location, new(Location.X + Length, Location.Y), Background, Thickness);
-            // Circle
-            for (int i = Size; i > 0; i--)
-            {
-                Gui.Batch.DrawCircle(new(new(Location.X + Value * Length, Location.Y), i), 20, State == 0 ? Color : Highlight);
-            }
-            // Outline
-            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X + Value * Length, Location.Y), Gui.CircleOutline.Bounds, Color.Black, 0, new(7, 7), Size / 7, SpriteEffects.None, 0f);
-
+            // Background
+            Gui.Batch.FillRectangle(new(Location.X, Location.Y, Width, Length), Background);
+            // Square
+            Gui.Batch.FillRectangle(new(Location.X, Location.Y + (Value * Length), Width, BarSize), Color);
         }
 
         // When changed value

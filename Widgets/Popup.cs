@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Collections.Generic;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
     public class Popup : Widget
     {
+        public event Action? OnClose;
         public Xna.Vector2 Dimensions { get; private set; }
         public Rectangle Rect { get; private set; }
         public Xna.Color Color { get; private set; }
@@ -68,7 +69,7 @@ namespace MonoGUI
                     {
                         // Move items
                         Xna.Vector2 delta = mouseState.Position.ToVector2() - previousState.Position.ToVector2();
-                        foreach ( Widget widget in Widgets) { widget.Location += delta; }
+                        foreach (Widget widget in Widgets) { widget.Location += delta; }
 
                         // Update self
                         Location += delta;
@@ -78,8 +79,10 @@ namespace MonoGUI
                         // Drag
                         dragging = true;
                     }
-                } else if (!PointRectCollide(Rect, mouseState.Position) && previousState.LeftButton != ButtonState.Pressed) { Visible = false; }
-            } else { dragging = false; }
+                }
+                else if (!PointRectCollide(Rect, mouseState.Position) && previousState.LeftButton != ButtonState.Pressed) { Visible = false; }
+            }
+            else { dragging = false; }
 
             // Widgets update
             foreach (Widget widget in Widgets) { widget.Update(); }
@@ -111,6 +114,6 @@ namespace MonoGUI
         public void AddWidgets(params Widget[] widgets) { foreach (Widget widget in widgets) { Widgets.Add(widget); } }
 
         // static
-        public static void Close(Popup popup) { popup.Visible = false; }
+        public static void Close(Popup popup) { popup.Visible = false; popup.OnClose?.Invoke(); }
     }
 }

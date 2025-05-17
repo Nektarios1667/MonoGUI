@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Linq;
-using System.Xml.Linq;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
@@ -65,7 +59,7 @@ namespace MonoGUI
         {
             return PointRectCollide(rect.Location, rect.Size, point.ToVector2());
         }
-        
+
         // PointCircleCollide
         public static bool PointCircleCollide(Xna.Vector2 loc, Xna.Vector2 center, int radius)
         {
@@ -85,7 +79,7 @@ namespace MonoGUI
         }
 
         // Nofunc
-        public static void NoFunc(params object[] _) {}
+        public static void NoFunc(params object[] _) { }
 
         // Softwraps
         public static string Softwrap(string text, SpriteFont font, Xna.Vector2 dimensions)

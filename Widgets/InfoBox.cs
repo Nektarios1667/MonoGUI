@@ -1,16 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Xml.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
@@ -46,13 +38,14 @@ namespace MonoGUI
             // Other variables
             Inside = new(Dimensions.X - Border * 2 - 2, Dimensions.Y - Border * 2 - 2);
             Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
-            Softwrapped =  Font != null ? LimitLines(SoftwrapWords(Text, Font, Inside), Font, Inside.Y) : Text;
+            Softwrapped = Font != null ? LimitLines(SoftwrapWords(Text, Font, Inside), Font, Inside.Y) : Text;
         }
         public override void Update()
         {
             // Hovering
             MouseState mouseState = Gui.MouseState;
-            if (PointRectCollide(Activation, mouseState.Position)) {
+            if (PointRectCollide(Activation, mouseState.Position))
+            {
                 if (time >= Delay) { Visible = true; }
                 else { time += Gui.Delta; }
             }

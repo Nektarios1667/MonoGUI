@@ -1,24 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Collections;
-using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
     public class Input : Widget
     {
         public Xna.Vector2 Dimensions { get; private set; }
-        public string Text { get; set; }
+        public string Text { get; private set; }
         public Rectangle Rect
         {
             get { return new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y); }
@@ -92,7 +86,7 @@ namespace MonoGUI
             ["OemCloseBrackets"] = '}',
             ["OemTilde"] = '~',
         };
-        private string[] controlKeys = [ "Back", "Left", "Right" ];
+        private string[] controlKeys = ["Back", "Left", "Right"];
         public Input(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
@@ -107,6 +101,7 @@ namespace MonoGUI
             Selected = false;
             Cursor = 0;
             previousKeys = [];
+            Reload();
         }
         public override void Update()
         {
@@ -121,7 +116,7 @@ namespace MonoGUI
             // Clicking
             MouseState mouseState = Gui.MouseState;
             if (mouseState.LeftButton == ButtonState.Pressed && previousState.LeftButton != ButtonState.Pressed)
-            {                
+            {
                 // Checks
                 if (PointRectCollide(Location, Dimensions, mouseState.Position)) { Selected = true; }
                 else { Selected = false; }
@@ -186,7 +181,8 @@ namespace MonoGUI
             if (Font != null)
             {
                 Gui.Batch.DrawString(Font, Text, new(Location.X + Border, Location.Y + Border), Foreground);
-            } else if (Text != "")
+            }
+            else if (Text != "")
             {
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
             }
@@ -215,7 +211,12 @@ namespace MonoGUI
             else if (shifted && specialKeys.ContainsKey(keyname) && upperSymbols.TryGetValue(keyname, out specialUpperKeyname)) { return specialUpperKeyname.ToString(); }
             return "";
         }
-
+        public void SetText(string text)
+        {
+            Text = text;
+            if (Cursor > text.Length) { Cursor = text.Length; }
+            Reload();
+        }
         // Static
         public int TextMeasure(SpriteFont font, char character) { return (int)font.MeasureString(character.ToString()).X; }
         public int TextMeasure(SpriteFont font, string character) { return (int)font.MeasureString(character).X; }

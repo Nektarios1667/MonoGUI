@@ -1,14 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Xml.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
 using Xna = Microsoft.Xna.Framework;
-using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace MonoGUI
 {
@@ -24,7 +16,7 @@ namespace MonoGUI
             Font = font == default ? gui.Arial : font;
             Color = color;
         }
-        public override void Update() {}
+        public override void Update() { }
         public override void Draw()
         {
             // Not drawing

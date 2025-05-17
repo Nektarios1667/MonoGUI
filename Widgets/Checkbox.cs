@@ -1,14 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Xml.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
@@ -62,7 +55,8 @@ namespace MonoGUI
                     State = 2;
                 }
                 else { State = 1; }
-            } else { State = 0; }
+            }
+            else { State = 0; }
             previousState = mouseState;
         }
         public override void Draw()

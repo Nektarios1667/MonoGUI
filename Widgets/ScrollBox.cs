@@ -7,7 +7,7 @@ using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
-    public class ListBox : Widget
+    public class ScrollBox : Widget
     {
         public event Action<string> ItemSelected;
         public Xna.Vector2 Dimensions { get; private set; }
@@ -21,8 +21,9 @@ namespace MonoGUI
         public List<Button> Items { get; private set; }
         public string Selected { get; private set; }
         // Private
+        private VerticalSlider ScrollBar;
         private int itemHeight;
-        public ListBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
+        public ScrollBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
@@ -35,19 +36,27 @@ namespace MonoGUI
             Border = border;
             BorderColor = (borderColor == default ? Color.Black : borderColor);
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
+            ScrollBar = new(gui, new(location.X + dimensions.X + border + 5, location.Y + border), (int)(dimensions.Y - border * 2), Color.Black, Color.Gray);
         }
         public override void Update()
         {
             // Hidden
             if (!Visible) { return; }
 
+            // Scrollbar
+            ScrollBar.Update();
+
             // Hovering
-            foreach (Button item in Items)
+            for (int b = 0; b < Items.Count; b++)
             {
+                // Item
+                Button item = Items[b];
+                // Location                                              default location                              scrolling             extra line                 remove one page
+                item.Location = new(item.Location.X, (Location.Y + Border - Seperation + itemHeight * b) - (ScrollBar.Value * itemHeight * (Items.Count + 1)) + (ScrollBar.Value * Dimensions.Y));
                 // Check X
-                if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X + item.Border > Location.X + Dimensions.X) { continue; }
+                if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X > Location.X + Dimensions.X) { continue; }
                 // Check Y
-                if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y + item.Border > Location.Y + Dimensions.Y) { continue; }
+                if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y > Location.Y + Dimensions.Y) { continue; }
                 // Update
                 item.Update();
             }
@@ -68,12 +77,15 @@ namespace MonoGUI
             foreach (Button item in Items)
             {
                 // Check X
-                if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X + item.Border > Location.X + Dimensions.X) { continue; }
+                if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X > Location.X + Dimensions.X) { continue; }
                 // Check Y
-                if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y + item.Border > Location.Y + Dimensions.Y) { continue; }
+                if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y > Location.Y + Dimensions.Y) { continue; }
                 // Draw
                 item.Draw();
             }
+
+            // Scrollbar
+            ScrollBar.Draw();
         }
         public override void Reload()
         {
@@ -83,7 +95,7 @@ namespace MonoGUI
         {
             foreach (string text in texts)
             {
-                Xna.Vector2 loc = new(Location.X + Border - Seperation, Location.Y + Border - Seperation + itemHeight * Items.Count);
+                Xna.Vector2 loc = new(Location.X + Border - Seperation, Location.Y + Border / 2 - Seperation + itemHeight * Items.Count);
                 Xna.Vector2 dim = new(Dimensions.X - Border - Seperation, itemHeight);
                 Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, text, Font, args: [text], border: Seperation, borderColor: BorderColor));
             }

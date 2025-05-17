@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -33,7 +34,6 @@ namespace MonoGUI
             // TODO: Add your initialization logic here
             base.Initialize();
         }
-
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -47,20 +47,22 @@ namespace MonoGUI
             // Widgets
             Gui.Widgets = [
                 new Label(Gui, new(100, 100), Color.Red, "Textbox----------", Arial),
-                new Input(Gui, new(100, 350), new(300, 25), Color.Black, Color.Gray, Color.LightGray, Arial),
+                new Input(Gui, new(100, 350), new(300, 25), Color.Black, Color.Gray, Color.LightGray),
                 new InfoBox(Gui, new(100, 400), new(300, 300), new(100, 400, 300, 300), Color.Gray, Color.Black, "Infobox".PadRight(1000, '-'), Arial),
                 new HorizontalSlider(Gui, new(100, 725), 100, Color.Black, new(55, 55, 55)),
                 new VerticalSlider(Gui, new(100, 750), 100, Color.Black, new(55, 55, 55)),
                 new ListBox(Gui, new(650, 50), new(100, 100), Color.Black, Color.Gray, Color.DarkGray),
                 new Dropdown(Gui, new(650, 175), new(125, 30), Color.Black, Color.Gray, Color.LightGray, Arial),
                 new Button(Gui, new(500, 10), new(100, 30), Color.White, Color.Gray, Color.DarkGray, Widget.NoFunc, text: $"Button---------------", font: Arial),
-                new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window---------------------------", Arial),
                 new Checkbox(Gui, new(650, 250), 25, Color.White, Color.Gray, Color.DarkGray),
+                new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window---------------------------", Arial),
+                new ScrollBox(Gui, new(800, 100), new(400, 400), Color.Black, Color.Gray, Color.DarkGray),
+                new ScrollBar(Gui, new(1300, 100), 50, Color.Black, Color.Gray),
             ];
             // Add items
             ((ListBox)Gui.Widgets[5]).AddItems("Item 1--------------------", "Item 2", "Item 3");
             ((Dropdown)Gui.Widgets[6]).AddItems("Selection 1---------------------", "Selection 2", "Selection 3");
-            ((Button)Gui.Widgets[7]).Function = (Action)Gui.Widgets[1].Show;
+            ((ScrollBox)Gui.Widgets[10]).AddItems(Enumerable.Range(1, 500).Select(i => $"Item {i}").ToArray());
         }
 
         protected override void Update(GameTime gameTime)
@@ -76,10 +78,11 @@ namespace MonoGUI
             if (KeyState.IsKeyDown(Keys.Escape)) { Exit(); }
 
             // Test
+            if (KeyState.GetPressedKeys().Contains(Keys.B)) { ((Input)Gui.Widgets[1]).SetText("hi"); }
 
             // Gui
             Gui.Update(DeltaTime, MouseState, KeyState);
-            
+
             base.Update(gameTime);
         }
 

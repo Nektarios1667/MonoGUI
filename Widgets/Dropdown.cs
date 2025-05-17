@@ -1,13 +1,8 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Xna = Microsoft.Xna.Framework;
-using MonoGame.Extended;
 using System.Collections.Generic;
-using MonoGame.Extended.Particles;
-using MonoGame.Extended.Graphics;
-using System.Drawing;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
@@ -51,7 +46,7 @@ namespace MonoGUI
         {
             // Hidden
             if (!Visible) { return; }
-            
+
             // Update selection button
             SelectButton.Update();
 
@@ -101,7 +96,7 @@ namespace MonoGUI
             }
         }
         public void ToggleOpen() { Open = !Open; }
-        public void SelectItem(string item) { Selected = item; SelectButton.Modify("Text", LimitString(item, Font, Dimensions.X - Border - arrowSize * 2));  OnItemSelected(item); Open = false; }
+        public void SelectItem(string item) { Selected = item; SelectButton.Modify("Text", LimitString(item, Font, Dimensions.X - Border - arrowSize * 2)); OnItemSelected(item); Open = false; }
         // When changed value
         public virtual void OnItemSelected(string item)
         {

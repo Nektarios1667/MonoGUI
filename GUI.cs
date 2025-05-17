@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoGUI
 {
+
     public class GUI
     {
         public Game Game { get; set; }
@@ -32,7 +36,7 @@ namespace MonoGUI
         public void Update(float deltaTime, MouseState mouseState, KeyboardState keyState)
         {
             // Not loaded
-            if (!_loaded) { return; }
+            if (!_loaded) { throw new Exception("GUI content needs to be loaded with LoadContent first."); }
 
             // Delta time
             Delta = deltaTime;
@@ -51,17 +55,18 @@ namespace MonoGUI
         public void LoadContent(ContentManager content)
         {
             CircleOutline = content.Load<Texture2D>("CircleOutline");
-            Arial = content.Load<SpriteFont>("Arial");
             ArrowDown = content.Load<Texture2D>("ArrowDown");
+            Arial = content.Load<SpriteFont>("Arial");
 
             _loaded = true;
         }
         // Layers
         public void BringToBack(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.Remove(moving); Widgets.Insert(0, moving); } }
-        public void BringToBack(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(0, widget); }}
+        public void BringToBack(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(0, widget); } }
         public void BringToFont(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.Remove(moving); Widgets.Append(moving); } }
         public void BringToFront(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Append(widget); } }
-        public void BringToIndex(Widget widget, int idx) {
+        public void BringToIndex(Widget widget, int idx)
+        {
             if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(Math.Clamp(idx, 0, Widgets.Count - 1), widget); }
         }
     }

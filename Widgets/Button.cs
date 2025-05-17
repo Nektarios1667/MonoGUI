@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Linq;
-using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using Xna = Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Reflection;
+using Xna = Microsoft.Xna.Framework;
 
 namespace MonoGUI
 {
@@ -70,7 +66,8 @@ namespace MonoGUI
                     Function?.DynamicInvoke(Args);
                 }
                 else { State = 1; }
-            } else { State = 0; }
+            }
+            else { State = 0; }
             previousState = mouseState;
         }
         public override void Draw()
@@ -88,7 +85,8 @@ namespace MonoGUI
             if (Font != null)
             {
                 Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
-            } else if (Text != "")
+            }
+            else if (Text != "")
             {
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
             }
