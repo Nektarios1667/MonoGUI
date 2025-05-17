@@ -6,9 +6,9 @@ namespace MonoGUI
 {
     public class Label : Widget
     {
-        public string Text { get; private set; }
-        public Xna.Color Color { get; private set; }
-        public SpriteFont? Font { get; private set; }
+        public string Text { get; set; }
+        public Xna.Color Color { get; set; }
+        public SpriteFont? Font { get; set; }
         // Centering
         public Label(GUI gui, Xna.Vector2 location, Color color, string text, SpriteFont? font = default) : base(gui, location)
         {
