@@ -80,7 +80,7 @@ namespace MonoGUI
                         dragging = true;
                     }
                 }
-                else if (!PointRectCollide(Rect, mouseState.Position) && previousState.LeftButton != ButtonState.Pressed) { Visible = false; }
+                else if (!PointRectCollide(Rect, mouseState.Position) && previousState.LeftButton != ButtonState.Pressed) { Close(this); }
             }
             else { dragging = false; }
 
