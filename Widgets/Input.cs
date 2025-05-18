@@ -25,7 +25,7 @@ namespace MonoGUI
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
         public object?[]? Args { get; private set; }
-        public bool Selected { get; private set; }
+        public bool Selected { get; set; }
         public int Cursor { get; private set; }
         // Private
         private Keys[] previousKeys;
