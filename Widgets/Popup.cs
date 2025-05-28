@@ -30,7 +30,6 @@ namespace MonoGUI
         public Color TitleColor { get; set; }
         // Private
         private bool dragging = false;
-        private Label titleBox;
         private Button closeButton;
         public Popup(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, string title, SpriteFont? titleFont = default, Color titleColor = default, Color barColor = default, int barSize = 25, int border = 3, Color borderColor = default) : base(gui, location)
         {
@@ -50,7 +49,6 @@ namespace MonoGUI
             // Builtin
             Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
             BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
-            titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
             closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             Widgets = [];
 
@@ -72,7 +70,6 @@ namespace MonoGUI
                         // Move items
                         Xna.Vector2 delta = mouseState.Position.ToVector2() - PreviousState.Position.ToVector2();
                         foreach (Widget widget in Widgets) { widget.Location += delta; }
-                        titleBox.Location += delta;
                         closeButton.Location += delta;
 
                         // Update self
@@ -90,7 +87,6 @@ namespace MonoGUI
 
             // Widgets update
             foreach (Widget widget in Widgets) { widget.Update(); }
-            titleBox.Update();
             closeButton.Update();
 
             // previousState
@@ -111,8 +107,9 @@ namespace MonoGUI
             // Outline
             Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
             // Builtins
-            titleBox.Draw();
             closeButton.Draw();
+            string text = LimitString(Title, TitleFont, Dimensions.X - Border * 2 - closeButton.Dimensions.X - closeButton.Border * 2);
+            Gui.Batch.DrawString(TitleFont, text, new Vector2(Location.X + 10, Location.Y + 4), TitleColor);
         }
         public override void Reload()
         {

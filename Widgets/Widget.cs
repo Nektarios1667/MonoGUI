@@ -79,7 +79,7 @@ namespace MonoGUI
         }
 
         // Nofunc
-        public static void NoFunc(params object[] _) { }
+        public static void NoFunc() { }
 
         // Softwraps
         public static string Softwrap(string text, SpriteFont font, Xna.Vector2 dimensions)

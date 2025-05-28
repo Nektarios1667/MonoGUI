@@ -151,7 +151,7 @@ namespace MonoGUI
                     // Uppercase symbol
                     else if (shifted && specialKeys.ContainsKey(keyname) && upperSymbols.TryGetValue(keyname, out specialUpperKeyname)) { Text = Text.Insert(Cursor, specialUpperKeyname.ToString()); }
                     // Backspace
-                    else if (keyname == "Back" && Text.Length > 0) { Text = Text.Remove(Cursor - 1, 1); }
+                    else if (keyname == "Back" && Cursor > 0) { Text = Text.Remove(Cursor - 1, 1); }
                     // Move cursor right
                     else if (keyname == "Right" && Cursor < Text.Length) { Cursor++; }
                     // Move cursor left
@@ -160,7 +160,7 @@ namespace MonoGUI
                     else { continue; }
 
                     // Every taken key other than backspace, left arrow, and right arrow adds a char
-                    if (keyname == "Back") { Cursor--; }
+                    if (keyname == "Back" && Cursor > 0) { Cursor--; }
                     else if (!controlKeys.Contains(keyname)) { Cursor++; }
                     Reload();
                 }
