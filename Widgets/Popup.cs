@@ -22,7 +22,7 @@ namespace MonoGUI
         public Color BarColor { get; private set; }
         public int BarSize { get; private set; }
         public Xna.Vector2 BarDimensions { get; private set; }
-        public MouseState previousState { get; private set; }
+        public MouseState PreviousState { get; private set; }
         public Rectangle BarRect { get; private set; }
         public List<Widget> Widgets { get; set; }
         public string Title { get; set; }
@@ -30,6 +30,8 @@ namespace MonoGUI
         public Color TitleColor { get; set; }
         // Private
         private bool dragging = false;
+        private Label titleBox;
+        private Button closeButton;
         public Popup(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, string title, SpriteFont? titleFont = default, Color titleColor = default, Color barColor = default, int barSize = 25, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
@@ -40,7 +42,7 @@ namespace MonoGUI
             BarSize = barSize;
             BarDimensions = new(dimensions.X, barSize);
             Visible = true;
-            previousState = default;
+            PreviousState = new();
             TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
             TitleFont = titleFont == default ? gui.Arial : titleFont;
             Title = title;
@@ -48,9 +50,9 @@ namespace MonoGUI
             // Builtin
             Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
             BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
-            Label titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
-            Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
-            Widgets = [closeButton, titleBox];
+            titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
+            closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
+            Widgets = [];
 
         }
         public override void Update()
@@ -60,16 +62,18 @@ namespace MonoGUI
 
             // Clicking
             MouseState mouseState = Gui.MouseState;
-            if (mouseState.LeftButton == ButtonState.Pressed && (previousState.LeftButton != ButtonState.Pressed || dragging))
+            if (mouseState.LeftButton == ButtonState.Pressed && (PreviousState.LeftButton != ButtonState.Pressed || dragging))
             {
                 // Dragging
                 if (PointRectCollide(BarRect, mouseState.Position) || dragging)
                 {
-                    if (previousState != default) // Check if the first time clicking
+                    if (PreviousState != default) // Check if the first time clicking
                     {
                         // Move items
-                        Xna.Vector2 delta = mouseState.Position.ToVector2() - previousState.Position.ToVector2();
+                        Xna.Vector2 delta = mouseState.Position.ToVector2() - PreviousState.Position.ToVector2();
                         foreach (Widget widget in Widgets) { widget.Location += delta; }
+                        titleBox.Location += delta;
+                        closeButton.Location += delta;
 
                         // Update self
                         Location += delta;
@@ -80,15 +84,17 @@ namespace MonoGUI
                         dragging = true;
                     }
                 }
-                else if (!PointRectCollide(Rect, mouseState.Position) && previousState.LeftButton != ButtonState.Pressed) { Close(this); }
+                else if (!PointRectCollide(Rect, mouseState.Position) && PreviousState.LeftButton != ButtonState.Pressed) { Close(this); }
             }
             else { dragging = false; }
 
             // Widgets update
             foreach (Widget widget in Widgets) { widget.Update(); }
+            titleBox.Update();
+            closeButton.Update();
 
             // previousState
-            previousState = mouseState;
+            PreviousState = mouseState;
         }
         public override void Draw()
         {
@@ -104,6 +110,9 @@ namespace MonoGUI
             foreach (Widget widget in Widgets) { widget.Draw(); }
             // Outline
             Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
+            // Builtins
+            titleBox.Draw();
+            closeButton.Draw();
         }
         public override void Reload()
         {
@@ -111,8 +120,6 @@ namespace MonoGUI
             Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
             Widgets = [closeButton, titleBox];
         }
-        public void AddWidgets(params Widget[] widgets) { foreach (Widget widget in widgets) { Widgets.Add(widget); } }
-
         // static
         public static void Close(Popup popup) { popup.Visible = false; popup.OnClose?.Invoke(); }
     }
