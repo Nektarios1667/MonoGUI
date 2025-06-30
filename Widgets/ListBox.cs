@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class ListBox : Widget
     {
         public event Action<string> ItemSelected;
-        public Xna.Vector2 Dimensions { get; private set; }
-        public Xna.Color Color { get; private set; }
-        public Xna.Color Highlight { get; private set; }
+        public Point Dimensions { get; private set; }
+        public Color Color { get; private set; }
+        public Color Highlight { get; private set; }
         public SpriteFont? Font { get; private set; }
         public Color Foreground { get; private set; }
         public int Seperation { get; private set; }
@@ -22,7 +15,7 @@ namespace MonoGUI
         public string Selected { get; private set; }
         // Private
         private int itemHeight;
-        public ListBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
+        public ListBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
@@ -83,9 +76,9 @@ namespace MonoGUI
         {
             foreach (string text in texts)
             {
-                Xna.Vector2 loc = new(Location.X + Border - Seperation, Location.Y + Border - Seperation + itemHeight * Items.Count);
-                Xna.Vector2 dim = new(Dimensions.X - Border - Seperation, itemHeight);
-                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, text, Font, args: [text], border: Seperation, borderColor: BorderColor));
+                Point loc = new(Location.X + Border - Seperation, Location.Y + Border - Seperation + itemHeight * Items.Count);
+                Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
+                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, Font, border: Seperation, borderColor: BorderColor));
             }
         }
         public void SelectItem(string item) { Selected = item; OnItemSelected(item); }

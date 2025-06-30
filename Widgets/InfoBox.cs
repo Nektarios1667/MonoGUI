@@ -1,28 +1,22 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class InfoBox : Widget
     {
-        public Xna.Vector2 Dimensions { get; private set; }
+        public Point Dimensions { get; private set; }
         public Rectangle Rect { get; private set; }
-        public Xna.Color Color { get; private set; }
+        public Color Color { get; private set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
         public string Text { get; set; }
         public SpriteFont? Font { get; set; }
         public Color Foreground { get; set; }
-        public Xna.Rectangle Activation { get; set; }
+        public Rectangle Activation { get; set; }
         public string Softwrapped { get; set; }
-        public Xna.Vector2 Inside { get; set; }
+        public Point Inside { get; set; }
         public float Delay { get; set; }
         // Private
         private float time;
-        public InfoBox(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Xna.Rectangle activation, Color color, Color foreground, string text, SpriteFont? font = default, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
+        public InfoBox(GUI gui, Point location, Point dimensions, Rectangle activation, Color color, Color foreground, string text, SpriteFont? font = default, float delay = 1, int border = 2, Color? borderColor = null) : base(gui, location)
         {
             Dimensions = dimensions;
             Activation = activation;
@@ -43,8 +37,7 @@ namespace MonoGUI
         public override void Update()
         {
             // Hovering
-            MouseState mouseState = Gui.MouseState;
-            if (PointRectCollide(Activation, mouseState.Position))
+            if (PointRectCollide(Activation, Gui.MousePosition))
             {
                 if (time >= Delay) { Visible = true; }
                 else { time += Gui.Delta; }

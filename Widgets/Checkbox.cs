@@ -1,9 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class Checkbox : Widget
     {
@@ -12,19 +7,19 @@ namespace MonoGUI
         {
             get { return new((int)Location.X, (int)Location.Y, Size, Size); }
         }
-        public Xna.Color Color { get; private set; }
-        public Xna.Color Highlight { get; private set; }
+        public Color Color { get; private set; }
+        public Color Highlight { get; private set; }
         public Color Foreground { get; private set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
         public bool Checked { get; private set; }
         public int State { get; private set; }
         public int CheckThickness { get; private set; }
-        private Xna.Vector2 CheckLocation { get; set; }
-        private Xna.Vector2 CheckDimensions { get; set; }
+        private Point CheckLocation { get; set; }
+        private Point CheckDimensions { get; set; }
         // Private
         private MouseState previousState;
-        public Checkbox(GUI gui, Xna.Vector2 location, int size, Color foreground, Xna.Color color, Xna.Color highlight, int border = 3, Color borderColor = default, int checkThickness = 4) : base(gui, location)
+        public Checkbox(GUI gui, Point location, int size, Color foreground, Color color, Color highlight, int border = 3, Color borderColor = default, int checkThickness = 4) : base(gui, location)
         {
             Size = size;
             Foreground = foreground;
@@ -34,7 +29,7 @@ namespace MonoGUI
             BorderColor = (borderColor == default ? Color.Black : borderColor);
             Checked = false;
             CheckThickness = checkThickness;
-            CheckLocation = new(Location.X + Size / 2f, Location.Y + Size / 2f);
+            CheckLocation = new(Location.X + Size / 2, Location.Y + Size / 2);
             int checkSize = Size - CheckThickness - Border * 2;
             CheckDimensions = new(checkSize, checkSize);
         }
@@ -44,12 +39,10 @@ namespace MonoGUI
             if (!Visible) { return; }
 
             // Hovering
-            MouseState mouseState = Gui.MouseState;
-            bool pressed = mouseState.LeftButton == ButtonState.Pressed;
-            if (PointRectCollide(Location, new(Size, Size), mouseState.Position))
+            if (PointRectCollide(Location, new Point(Size), Gui.MousePosition.ToVector2()))
             {
                 // Clicking
-                if (pressed && previousState.LeftButton != ButtonState.Pressed)
+                if (Gui.LMouseClicked)
                 {
                     Checked = !Checked;
                     State = 2;
@@ -57,7 +50,6 @@ namespace MonoGUI
                 else { State = 1; }
             }
             else { State = 0; }
-            previousState = mouseState;
         }
         public override void Draw()
         {
@@ -77,7 +69,7 @@ namespace MonoGUI
         public override void Reload()
         {
             // Check
-            CheckLocation = new(Location.X + Size / 2f, Location.Y + Size / 2f);
+            CheckLocation = new(Location.X + Size / 2, Location.Y + Size / 2);
             int checkSize = Size - CheckThickness - Border * 2;
             CheckDimensions = new(checkSize, checkSize);
         }

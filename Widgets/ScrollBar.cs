@@ -1,17 +1,11 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class ScrollBar : Widget
     {
         public event Action<float> ValueChanged;
         public int Length { get; private set; }
-        public Xna.Color Color { get; private set; }
-        public Xna.Color Highlight { get; private set; }
+        public Color Color { get; private set; }
+        public Color Highlight { get; private set; }
         public Color Background { get; private set; }
         public int Width { get; private set; }
         public int State { get; private set; }
@@ -19,8 +13,7 @@ namespace MonoGUI
         public int BarSize { get; private set; }
         // Private
         private bool dragging = false;
-        private MouseState previousState;
-        public ScrollBar(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, int barSize = 20, Color? background = null, int width = 10, int size = 7) : base(gui, location)
+        public ScrollBar(GUI gui, Point location, int length, Color color, Color highlight, int barSize = 20, Color? background = null, int width = 10, int size = 7) : base(gui, location)
         {
             Length = length;
             Color = color;
@@ -37,15 +30,14 @@ namespace MonoGUI
             if (!Visible) { return; }
 
             // Hovering
-            MouseState mouseState = Gui.MouseState;
-            if (PointRectCollide(new((int)Location.X, (int)(Location.Y + (Value * Length)), Width, Length), mouseState.Position) || dragging)
+            if (PointRectCollide(new Rectangle(Location.X, (int)(Location.Y + (Value * Length)), Width, Length), Gui.MousePosition) || dragging)
             {
                 // Clicking
-                if (mouseState.LeftButton == ButtonState.Pressed && (previousState.LeftButton != ButtonState.Pressed || dragging))
+                if (Gui.LMouseDown)
                 {
                     // Update
                     State = 2;
-                    float move = (mouseState.Position.Y - previousState.Position.Y) / (float)Length;
+                    float move = (Gui.MousePosition.Y - Gui.LastMouseState.Position.Y) / (float)Length;
                     dragging = true;
 
                     // Change
@@ -58,9 +50,6 @@ namespace MonoGUI
                 else { dragging = false; State = 1; }
             }
             else { dragging = false; State = 0; }
-
-            // previousState
-            previousState = mouseState;
         }
 
         public override void Draw()

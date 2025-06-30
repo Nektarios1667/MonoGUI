@@ -1,18 +1,13 @@
-﻿using System;
-using System.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
+﻿using System.Reflection;
 
 namespace MonoGUI
 {
     public abstract class Widget
     {
-        public Xna.Vector2 Location { get; set; }
+        public Point Location { get; set; }
         public bool Visible { get; set; }
         public GUI Gui { get; set; }
-        public Widget(GUI gui, Xna.Vector2 location) { Gui = gui; Location = location; Visible = true; }
+        public Widget(GUI gui, Point location) { Gui = gui; Location = location; Visible = true; }
         public abstract void Update();
         public abstract void Draw();
         public virtual void Reload() { }
@@ -39,41 +34,45 @@ namespace MonoGUI
         // Static methods
 
         // PointRectCollide
-        public static bool PointRectCollide(Xna.Vector2 loc, Xna.Vector2 dim, Xna.Vector2 point)
+        public static bool PointRectCollide(Vector2 loc, Vector2 dim, Vector2 point)
         {
             return (point.X >= loc.X && point.X <= loc.X + dim.X) && (point.Y >= loc.Y && point.Y <= loc.Y + dim.Y);
         }
-        public static bool PointRectCollide(Xna.Point loc, Xna.Vector2 dim, Xna.Vector2 point)
+        public static bool PointRectCollide(Point loc, Vector2 dim, Vector2 point)
         {
             return (point.X >= loc.X && point.X <= loc.X + dim.X) && (point.Y >= loc.Y && point.Y <= loc.Y + dim.Y);
         }
-        public static bool PointRectCollide(Xna.Point loc, Xna.Point dim, Xna.Vector2 point)
+        public static bool PointRectCollide(Point loc, Point dim, Vector2 point)
         {
             return (point.X >= loc.X && point.X <= loc.X + dim.X) && (point.Y >= loc.Y && point.Y <= loc.Y + dim.Y);
         }
-        public static bool PointRectCollide(Xna.Vector2 loc, Xna.Vector2 dim, Xna.Point point)
+        public static bool PointRectCollide(Point loc, Point dim, Point point)
+        {
+            return (point.X >= loc.X && point.X <= loc.X + dim.X) && (point.Y >= loc.Y && point.Y <= loc.Y + dim.Y);
+        }
+        public static bool PointRectCollide(Vector2 loc, Vector2 dim, Point point)
         {
             return PointRectCollide(loc, dim, point.ToVector2());
         }
-        public static bool PointRectCollide(Rectangle rect, Xna.Point point)
+        public static bool PointRectCollide(Rectangle rect, Point point)
         {
             return PointRectCollide(rect.Location, rect.Size, point.ToVector2());
         }
 
         // PointCircleCollide
-        public static bool PointCircleCollide(Xna.Vector2 loc, Xna.Vector2 center, int radius)
+        public static bool PointCircleCollide(Vector2 loc, Vector2 center, int radius)
         {
-            return Xna.Vector2.DistanceSquared(loc, center) <= radius * radius;
+            return Vector2.DistanceSquared(loc, center) <= radius * radius;
         }
-        public static bool PointCircleCollide(Xna.Point loc, Xna.Vector2 center, int radius)
+        public static bool PointCircleCollide(Point loc, Vector2 center, int radius)
         {
             return PointCircleCollide(loc.ToVector2(), center, radius);
         }
-        public static bool PointCircleCollide(Xna.Vector2 loc, Xna.Point center, int radius)
+        public static bool PointCircleCollide(Vector2 loc, Point center, int radius)
         {
             return PointCircleCollide(loc, center.ToVector2(), radius);
         }
-        public static bool PointCircleCollide(Xna.Point loc, Xna.Point center, int radius)
+        public static bool PointCircleCollide(Point loc, Point center, int radius)
         {
             return PointCircleCollide(loc.ToVector2(), center.ToVector2(), radius);
         }
@@ -82,7 +81,7 @@ namespace MonoGUI
         public static void NoFunc() { }
 
         // Softwraps
-        public static string Softwrap(string text, SpriteFont font, Xna.Vector2 dimensions)
+        public static string Softwrap(string text, SpriteFont font, Point dimensions)
         {
             // setup
             string wrapped = "";
@@ -97,7 +96,7 @@ namespace MonoGUI
             }
             return wrapped + text[start..end];
         }
-        public static string SoftwrapWords(string text, SpriteFont font, Xna.Vector2 dimensions)
+        public static string SoftwrapWords(string text, SpriteFont font, Point dimensions)
         {
             // setup
             string wrapped = "";
@@ -141,7 +140,7 @@ namespace MonoGUI
         }
 
         // Drawing
-        public static void DrawX(SpriteBatch batch, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, int thickness = 2)
+        public static void DrawX(SpriteBatch batch, Point location, Point dimensions, Color color, int thickness = 2)
         {
             //  "\" line
             batch.DrawLine(new(location.X - dimensions.X / 2, location.Y - dimensions.Y / 2), new(location.X + dimensions.X / 2, location.Y + dimensions.Y / 2), color, thickness);
