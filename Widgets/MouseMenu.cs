@@ -24,6 +24,7 @@
             Seperation = seperation;
             Border = border;
             BorderColor = (borderColor == default ? Color.Black : borderColor);
+            Visible = false;
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
         }
         public override void Update()
