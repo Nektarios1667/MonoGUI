@@ -1,18 +1,11 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class HorizontalSlider : Widget
     {
         public event Action<float> ValueChanged;
         public int Length { get; private set; }
-        public Xna.Color Color { get; private set; }
-        public Xna.Color Highlight { get; private set; }
+        public Color Color { get; private set; }
+        public Color Highlight { get; private set; }
         public Color Background { get; private set; }
         public int Thickness { get; private set; }
         public int Size { get; private set; }
@@ -21,7 +14,7 @@ namespace MonoGUI
         // Private
         private bool dragging = false;
         private MouseState previousState;
-        public HorizontalSlider(GUI gui, Xna.Vector2 location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
+        public HorizontalSlider(GUI gui, Point location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
         {
             Length = length;
             Color = color;
@@ -38,15 +31,14 @@ namespace MonoGUI
             if (!Visible) { return; }
 
             // Hovering
-            MouseState mouseState = Gui.MouseState;
-            if (PointCircleCollide(mouseState.Position, new Xna.Vector2(Location.X + Value * Length, Location.Y), Size) || dragging)
+            if (PointCircleCollide(Gui.MousePosition, new Vector2(Location.X + Value * Length, Location.Y), Size) || dragging)
             {
                 // Clicking
-                if (mouseState.LeftButton == ButtonState.Pressed && (previousState.LeftButton != ButtonState.Pressed || dragging))
+                if (Gui.LMouseDown)
                 {
                     // Update
                     State = 2;
-                    float val = Math.Clamp((mouseState.Position.X - Location.X) / Length, 0, 1);
+                    float val = Math.Clamp((Gui.MousePosition.X - Location.X) / (float)Length, 0, 1);
                     dragging = true;
 
                     // Change
@@ -59,9 +51,6 @@ namespace MonoGUI
                 else { dragging = false; State = 1; }
             }
             else { dragging = false; State = 0; }
-
-            // previousState
-            previousState = mouseState;
         }
 
         public override void Draw()
@@ -71,7 +60,7 @@ namespace MonoGUI
             if (Gui.CircleOutline == null) { return; }
 
             // Line
-            Gui.Batch.DrawLine(Location, new(Location.X + Length, Location.Y), Background, Thickness);
+            Gui.Batch.DrawLine(Location.ToVector2(), new(Location.X + Length, Location.Y), Background, Thickness);
             // Circle
             for (int i = Size; i > 0; i--)
             {

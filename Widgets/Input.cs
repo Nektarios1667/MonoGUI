@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
+﻿using System.Linq;
 
 namespace MonoGUI
 {
     public class Input : Widget
     {
-        public Xna.Vector2 Dimensions { get; private set; }
+        public Point Dimensions { get; private set; }
         public string Text { get; private set; }
         public Rectangle Rect
         {
             get { return new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y); }
         }
-        public Xna.Color Color { get; private set; }
-        public Xna.Color Highlight { get; private set; }
+        public Color Color { get; private set; }
+        public Color Highlight { get; private set; }
         public SpriteFont? Font { get; private set; }
         public Color Foreground { get; private set; }
         public Delegate? Function { get; private set; }
@@ -28,14 +21,12 @@ namespace MonoGUI
         public bool Selected { get; set; }
         public int Cursor { get; private set; }
         // Private
-        private Keys[] previousKeys;
-        private MouseState previousState;
         private float blink = 0;
         private int cursorX = 0;
         private int textsize = 0;
         private Dictionary<Keys, float> keyHoldTimes = new();
         private Dictionary<Keys, float> keyHoldPauses = new();
-        private Xna.Vector2 charsize;
+        private Vector2 charsize;
         // Key mapping
         private readonly Dictionary<string, char> specialKeys = new()
         {
@@ -87,7 +78,7 @@ namespace MonoGUI
             ["OemTilde"] = '~',
         };
         private string[] controlKeys = ["Back", "Left", "Right"];
-        public Input(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color foreground, Xna.Color color, Xna.Color highlight, SpriteFont? font = default, int border = 3, Color borderColor = default) : base(gui, location)
+        public Input(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = default, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Text = "";
@@ -100,7 +91,6 @@ namespace MonoGUI
             BorderColor = borderColor == default ? Color.Black : borderColor;
             Selected = false;
             Cursor = 0;
-            previousKeys = [];
             Reload();
         }
         public override void Update()
@@ -114,19 +104,17 @@ namespace MonoGUI
             else blink = .499f;
 
             // Clicking
-            MouseState mouseState = Gui.MouseState;
-            if (mouseState.LeftButton == ButtonState.Pressed && previousState.LeftButton != ButtonState.Pressed)
+            if (Gui.LMouseClicked)
             {
                 // Checks
-                if (PointRectCollide(Location, Dimensions, mouseState.Position)) { Selected = true; }
+                if (PointRectCollide(Location, Dimensions, Gui.MousePosition)) { Selected = true; }
                 else { Selected = false; }
             }
-            previousState = mouseState;
 
             // Typing
-            Keys[] pressed = Gui.KeyState.GetPressedKeys();
+            Keys[] pressed = Gui.KeysPressed;
             if (!Selected) { return; }
-            bool shifted = pressed.Contains(Keys.LeftShift) || pressed.Contains(Keys.RightShift);
+            bool shifted = Gui.AnyKeyDown(Keys.LeftShift, Keys.RightShift);
             char specialKeyname, specialUpperKeyname;
             foreach (Keys key in pressed)
             {
@@ -134,12 +122,12 @@ namespace MonoGUI
                 if ((textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
                 {
                     // Check repeated hold
-                    if (previousKeys.Contains(key)) { keyHoldTimes[key] += Gui.Delta; }
+                    if (Gui.LastKeyState.GetPressedKeys().Contains(key)) { keyHoldTimes[key] += Gui.Delta; }
                     else { keyHoldTimes[key] = 0f; keyHoldPauses[key] = 0f; }
 
                     if (keyHoldTimes[key] >= 0.5f) { keyHoldPauses[key] += Gui.Delta; }
 
-                    if (previousKeys.Contains(key) && keyHoldPauses[key] < 0.04f) { continue; }
+                    if (Gui.LastKeyState.GetPressedKeys().Contains(key) && keyHoldPauses[key] < 0.04f) { continue; }
                     else { keyHoldPauses[key] = 0f; }
 
                     // Uppercase letter
@@ -165,7 +153,6 @@ namespace MonoGUI
                     Reload();
                 }
             }
-            previousKeys = pressed;
         }
         public override void Draw()
         {

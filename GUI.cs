@@ -1,24 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿global using System;
+global using System.Collections.Generic;
+global using Microsoft.Xna.Framework;
+global using Microsoft.Xna.Framework.Content;
+global using Microsoft.Xna.Framework.Graphics;
+global using Microsoft.Xna.Framework.Input;
+global using MonoGame.Extended;
+
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+
 
 namespace MonoGUI
 {
 
     public class GUI
     {
+        // Input generators
+        public Point MousePosition => MouseState.Position;
+        public Keys[] KeysPressed => KeyState.GetPressedKeys();
+        public bool KeyPressed(Keys key) => KeyState.IsKeyDown(key) && LastKeyState.IsKeyUp(key);
+        public bool KeyDown(Keys key) => KeyState.IsKeyDown(key);
+        public bool AnyKeyDown(params Keys[] keys)
+        {
+            foreach (Keys key in keys)
+                if (KeyState.IsKeyDown(key)) return true;
+            return false;
+        }
+        public bool AllKeysDown(params Keys[] keys)
+        {
+            foreach (Keys key in keys)
+                if (!KeyState.IsKeyDown(key)) return false;
+            return true;
+        }
+        public bool Hotkey(Keys modifier, Keys key) => KeyState.IsKeyDown(modifier) && KeyPressed(key);
+        public bool Hotkey(Keys modifier1, Keys modifier2, Keys key) => KeyState.IsKeyDown(modifier1) && KeyState.IsKeyDown(modifier2) && KeyPressed(key);
+        public bool LMouseClicked => MouseState.LeftButton == ButtonState.Pressed && LastMouseState.LeftButton == ButtonState.Released;
+        public bool RMouseClicked => MouseState.RightButton == ButtonState.Pressed && LastMouseState.RightButton == ButtonState.Released;
+        public bool MMouseClicked => MouseState.MiddleButton == ButtonState.Pressed && LastMouseState.MiddleButton == ButtonState.Released;
+        public bool LMouseReleased => MouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed;
+        public bool RMouseReleased => MouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed;
+        public bool MMouseReleased => MouseState.MiddleButton == ButtonState.Released && LastMouseState.MiddleButton == ButtonState.Pressed;
+        public bool LMouseDown => MouseState.LeftButton == ButtonState.Pressed;
+        public bool RMouseDown => MouseState.RightButton == ButtonState.Pressed;
+        public bool MMouseDown => MouseState.MiddleButton == ButtonState.Pressed;
+        public int ScrollWheelValue => MouseState.ScrollWheelValue;
+        public int ScrollWheelChange => MouseState.ScrollWheelValue - LastMouseState.ScrollWheelValue;
+
+        // Properties
         public Game Game { get; set; }
         public SpriteBatch Batch { get; private set; }
         public List<Widget> Widgets { get; set; }
-        public MouseState MouseState { get; set; }
-        public KeyboardState KeyState { get; set; }
+        public MouseState MouseState { get; private set; }
+        public MouseState LastMouseState { get; private set; }
+        public KeyboardState KeyState { get; private set; }
+        public KeyboardState LastKeyState { get; private set; }
         public float Delta { get; private set; }
         public Texture2D? CircleOutline { get; private set; }
         public Texture2D? ArrowDown { get; private set; }
@@ -31,6 +66,8 @@ namespace MonoGUI
             Batch = spriteBatch;
             MouseState = new();
             KeyState = new();
+            LastMouseState = new();
+            LastKeyState = new();
             _loaded = false;
         }
         public void Update(float deltaTime, MouseState mouseState, KeyboardState keyState)
@@ -47,16 +84,21 @@ namespace MonoGUI
 
             // Updates
             foreach (Widget widget in Widgets) { widget.Update(); }
+
+            // Last
+            LastMouseState = MouseState;
+            LastKeyState = KeyState;
         }
         public void Draw()
         {
             foreach (Widget widget in Widgets) { widget.Draw(); }
         }
-        public void LoadContent(ContentManager content)
+        public void LoadContent(ContentManager content, string filepath = "")
         {
-            CircleOutline = content.Load<Texture2D>("CircleOutline");
-            ArrowDown = content.Load<Texture2D>("ArrowDown");
-            Arial = content.Load<SpriteFont>("Arial");
+            string prepend = filepath == "" ? "" : filepath + Path.DirectorySeparatorChar;
+            CircleOutline = content.Load<Texture2D>($"{prepend}CircleOutline");
+            ArrowDown = content.Load<Texture2D>($"{prepend}ArrowDown");
+            Arial = content.Load<SpriteFont>($"{prepend}Arial");
 
             _loaded = true;
         }

@@ -1,16 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class Label : Widget
     {
         public string Text { get; set; }
-        public Xna.Color Color { get; set; }
+        public Color Color { get; set; }
         public SpriteFont? Font { get; set; }
         // Centering
-        public Label(GUI gui, Xna.Vector2 location, Color color, string text, SpriteFont? font = default) : base(gui, location)
+        public Label(GUI gui, Point location, Color color, string text, SpriteFont? font = default) : base(gui, location)
         {
             Text = text;
             Font = font == default ? gui.Arial : font;
@@ -24,7 +20,7 @@ namespace MonoGUI
             if (Font == null) { return; }
 
             // Text
-            Gui.Batch.DrawString(Font, Text, Location, Color);
+            Gui.Batch.DrawString(Font, Text, Location.ToVector2(), Color);
         }
     }
 }

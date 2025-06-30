@@ -1,37 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Xml;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Xna = Microsoft.Xna.Framework;
-
-namespace MonoGUI
+﻿namespace MonoGUI
 {
     public class Popup : Widget
     {
         public event Action? OnClose;
-        public Xna.Vector2 Dimensions { get; private set; }
+        public Point Dimensions { get; private set; }
         public Rectangle Rect { get; private set; }
-        public Xna.Color Color { get; private set; }
+        public Color Color { get; private set; }
         public Delegate? Function { get; private set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
         public Color BarColor { get; private set; }
         public int BarSize { get; private set; }
-        public Xna.Vector2 BarDimensions { get; private set; }
+        public Vector2 BarDimensions { get; private set; }
         public MouseState PreviousState { get; private set; }
         public Rectangle BarRect { get; private set; }
         public List<Widget> Widgets { get; set; }
         public string Title { get; set; }
-        public SpriteFont? TitleFont { get; set; }
+        public SpriteFont TitleFont { get; set; }
         public Color TitleColor { get; set; }
         // Private
         private bool dragging = false;
         private Button closeButton;
-        public Popup(GUI gui, Xna.Vector2 location, Xna.Vector2 dimensions, Color color, string title, SpriteFont? titleFont = default, Color titleColor = default, Color barColor = default, int barSize = 25, int border = 3, Color borderColor = default) : base(gui, location)
+        public Popup(GUI gui, Point location, Point dimensions, Color color, string title, SpriteFont? titleFont = default, Color titleColor = default, Color barColor = default, int barSize = 25, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Color = color;
@@ -43,13 +33,13 @@ namespace MonoGUI
             Visible = true;
             PreviousState = new();
             TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
-            TitleFont = titleFont == default ? gui.Arial : titleFont;
+            TitleFont = titleFont == default ? gui.Arial! : titleFont;
             Title = title;
 
             // Builtin
             Rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
             BarRect = new((int)Location.X, (int)Location.Y, (int)BarDimensions.X, (int)BarSize);
-            closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
+            closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, [this]);
             Widgets = [];
 
         }
@@ -68,7 +58,7 @@ namespace MonoGUI
                     if (PreviousState != default) // Check if the first time clicking
                     {
                         // Move items
-                        Xna.Vector2 delta = mouseState.Position.ToVector2() - PreviousState.Position.ToVector2();
+                        Point delta = (mouseState.Position.ToVector2() - PreviousState.Position.ToVector2()).ToPoint();
                         foreach (Widget widget in Widgets) { widget.Location += delta; }
                         closeButton.Location += delta;
 
@@ -114,7 +104,7 @@ namespace MonoGUI
         public override void Reload()
         {
             Label titleBox = new(Gui, new(Location.X + 10, Location.Y + 4), TitleColor, LimitString(Title, TitleFont, Dimensions.X - 50 - Border * 2 - 10), TitleFont);
-            Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, args: [this]);
+            Button closeButton = new(Gui, new(Location.X + Dimensions.X - 50, Location.Y), new(50, 25), Color.White, Color.Red, new(255, 75, 75), Close, [this]);
             Widgets = [closeButton, titleBox];
         }
         // static

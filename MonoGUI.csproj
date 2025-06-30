@@ -14,7 +14,7 @@
 		<PackageId>MonoGUI</PackageId>
 		<Version>1.5.0</Version>
 		<Authors>Nektarios</Authors>
-		<Description>A simple GUI toolkit for MonoGame with many customizable widgets.</Description>
+		<Description>A simple GUI toolkit for MonoGame with simple customizable widgets.</Description>
 		<PackageTags>monogame;gui</PackageTags>
 		<RepositoryUrl>https://github.com/Nektarios1667/MonoGUI</RepositoryUrl>
 	</PropertyGroup>
@@ -24,7 +24,10 @@
 		<Message Text="Restoring dotnet tools" Importance="High" />
 		<Exec Command="dotnet tool restore" />
 	</Target>
-
+	<!-- Install required .xnb files -->
+	<ItemGroup>
+		<Content Include="CompiledContent\**\*.xnb" Pack="true" PackagePath="contentFiles\any\Content\" />
+	</ItemGroup>
 	<!-- Remove unnecessary files from package -->
 	<ItemGroup>
 		<None Remove=".gitattributes" />
@@ -39,10 +42,5 @@
 		<PackageReference Include="MonoGame.Extended" Version="4.0.4" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
-	</ItemGroup>
-
-	<!-- Xnb files -->
-	<ItemGroup>
-		<None Include="Content\**\*.xnb" Pack="true" PackagePath="contentFiles\any\any\Content\" CopyToOutput="true" />
 	</ItemGroup>
 </Project>
