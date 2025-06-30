@@ -30,6 +30,7 @@
         public override void Update()
         {
             // Check open/close
+            if ((Gui.LMouseClicked || Gui.MMouseClicked || Gui.RMouseClicked)) Visible = false;
             if (Gui.RMouseClicked)
             {
                 // Check if mouse is inside the menu
@@ -40,8 +41,6 @@
                     Location = Gui.MousePosition;
                 }
             }
-            if (Gui.LMouseClicked && !PointRectCollide(Location, Dimensions, Gui.MousePosition))
-                Visible = false;
 
             // Hidden
             if (!Visible) { return; }
