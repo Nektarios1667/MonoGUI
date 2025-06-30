@@ -24,7 +24,7 @@
             Dimensions = dimensions;
             Items = [];
             Selected = "";
-            Font = font == default ? gui.Arial : font;
+            Font = font == default ? gui.Font : font;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;

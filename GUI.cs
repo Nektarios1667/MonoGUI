@@ -57,9 +57,9 @@ namespace MonoGUI
         public float Delta { get; private set; }
         public Texture2D? CircleOutline { get; private set; }
         public Texture2D? ArrowDown { get; private set; }
-        public SpriteFont? Arial { get; private set; }
-        private bool _loaded { get; set; }
-        public GUI(Game game, SpriteBatch spriteBatch)
+        public SpriteFont? Font { get; private set; }
+        private bool _loaded { get; set; } = false;
+        public GUI(Game game, SpriteBatch spriteBatch, SpriteFont guiFont)
         {
             Game = game;
             Widgets = [];
@@ -68,7 +68,7 @@ namespace MonoGUI
             KeyState = new();
             LastMouseState = new();
             LastKeyState = new();
-            _loaded = false;
+            Font = guiFont;
         }
         public void Update(float deltaTime, MouseState mouseState, KeyboardState keyState)
         {
@@ -98,8 +98,7 @@ namespace MonoGUI
             string prepend = filepath == "" ? "" : filepath + Path.DirectorySeparatorChar;
             CircleOutline = content.Load<Texture2D>($"{prepend}CircleOutline");
             ArrowDown = content.Load<Texture2D>($"{prepend}ArrowDown");
-            Arial = content.Load<SpriteFont>($"{prepend}Arial");
-
+            
             _loaded = true;
         }
         // Layers

@@ -25,7 +25,7 @@
             BorderColor = (borderColor == null ? Color.Black : (Color)borderColor);
             Visible = true;
             Text = text;
-            Font = font == default ? gui.Arial : font;
+            Font = font == default ? gui.Font : font;
             Foreground = foreground;
             Delay = delay;
 

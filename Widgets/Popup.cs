@@ -33,7 +33,7 @@
             Visible = true;
             PreviousState = new();
             TitleColor = titleColor == default ? Color.Black : (Color)titleColor;
-            TitleFont = titleFont == default ? gui.Arial! : titleFont;
+            TitleFont = titleFont == default ? gui.Font! : titleFont;
             Title = title;
 
             // Builtin

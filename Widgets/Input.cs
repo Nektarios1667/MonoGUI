@@ -83,7 +83,7 @@ namespace MonoGUI
             Dimensions = dimensions;
             Text = "";
             charsize = font != null ? font.MeasureString("_") : new(0, 0);
-            Font = font == default ? gui.Arial : font;
+            Font = font == default ? gui.Font : font;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;

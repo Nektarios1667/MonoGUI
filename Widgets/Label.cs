@@ -9,7 +9,7 @@
         public Label(GUI gui, Point location, Color color, string text, SpriteFont? font = default) : base(gui, location)
         {
             Text = text;
-            Font = font == default ? gui.Arial : font;
+            Font = font == default ? gui.Font : font;
             Color = color;
         }
         public override void Update() { }

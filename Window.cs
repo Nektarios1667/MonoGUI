@@ -33,14 +33,14 @@ namespace MonoGUI
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            Gui = new GUI(this, _spriteBatch);
-            Gui.LoadContent(Content);
 
             // Fonts
             Arial = Content.Load<SpriteFont>("Arial");
             ArialSmall = Content.Load<SpriteFont>("ArialSmall");
 
             // Widgets
+            Gui = new GUI(this, _spriteBatch, Arial);
+            Gui.LoadContent(Content);
             Gui.Widgets = [
                 new Label(Gui, new(100, 100), Color.Red, "Textbox----------", Arial),
                 new Input(Gui, new(100, 350), new(300, 25), Color.Black, Color.Gray, Color.LightGray),

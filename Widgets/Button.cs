@@ -27,7 +27,7 @@ namespace MonoGUI
         {
             Dimensions = dimensions;
             Text = text;
-            Font = font == default ? gui.Arial : font;
+            Font = font == default ? gui.Font : font;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
