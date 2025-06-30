@@ -70,9 +70,9 @@
         }
         public void AddItem(string text, Delegate? action, object?[] args)
         {
-            Point loc = new(Location.X + Border - Seperation, Location.Y + Border - Seperation + itemHeight * Items.Count);
+            Point loc = new(Location.X + Border, Location.Y + Border + (itemHeight + Seperation) * Items.Count);
             Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
-            Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, action, args, text, Font, border: Seperation, borderColor: BorderColor));
+            Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, action, args, text, Font, border:0, borderColor: Color));
         }
     }
 }

@@ -54,7 +54,7 @@ namespace MonoGUI
                 new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window---------------------------", Arial),
                 new ScrollBox(Gui, new(800, 100), new(400, 400), Color.Black, Color.Gray, Color.DarkGray),
                 new ScrollBar(Gui, new(1300, 100), 50, Color.Black, Color.Gray),
-                new MouseMenu(Gui, new(1000, 100), new(200, 200), Color.Black, Color.Gray, Color.DarkGray, Arial),
+                new MouseMenu(Gui, new(1000, 100), new(100, 300), Color.Black, Color.Gray, Color.DarkGray, seperation:3),
             ];
             // Add items
             ((ListBox)Gui.Widgets[5]).AddItems("Item 1--------------------", "Item 2", "Item 3");
