@@ -15,6 +15,8 @@ namespace MonoGUI
 
     public class GUI
     {
+        // Colors
+        public static readonly Color NearBlack = new(55, 55, 55);
         // Input generators
         public Point MousePosition => MouseState.Position;
         public Keys[] KeysPressed => KeyState.GetPressedKeys();

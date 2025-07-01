@@ -55,7 +55,10 @@ namespace MonoGUI
                 if (Gui.LMouseClicked)
                 {
                     State = 2;
-                    Function?.DynamicInvoke(Args);
+                    if (Args.Length == 0)
+                        Function?.DynamicInvoke();
+                    else
+                        Function?.DynamicInvoke(Args);
                 }
                 else { State = 1; }
             }
