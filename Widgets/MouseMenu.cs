@@ -29,8 +29,7 @@
         }
         public override void Update()
         {
-            // Check open/close
-            if ((Gui.LMouseClicked || Gui.MMouseClicked || Gui.RMouseClicked)) Visible = false;
+            // Open
             if (Gui.RMouseClicked)
             {
                 // Check if mouse is inside the menu
@@ -41,9 +40,10 @@
                     Location = Gui.MousePosition;
                 }
             }
+            // Close
+            if ((Gui.LMouseClicked || Gui.MMouseClicked || Gui.RMouseClicked) && !PointRectCollide(Location, Dimensions, Gui.MousePosition))
+                Visible = false;
 
-            // Hidden
-            if (!Visible) { return; }
 
             // Hovering
             foreach (Button item in Items) item.Update();
@@ -67,11 +67,16 @@
         {
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
         }
+        private void RunMenuItem(Delegate? action, object?[] args)
+        {
+            action?.DynamicInvoke(args);
+            Visible = false; // Close menu after action
+        }
         public void AddItem(string text, Delegate? action, object?[] args)
         {
             Point loc = new(Location.X + Border, Location.Y + Border + (itemHeight + Seperation) * Items.Count);
             Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
-            Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, action, args, text, Font, border:0, borderColor: Color));
+            Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, RunMenuItem, [action, args], text, Font, border:0, borderColor: Color));
         }
     }
 }
