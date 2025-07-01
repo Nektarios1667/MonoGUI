@@ -68,7 +68,7 @@ public class MouseMenu : Widget
                 item.SubMenu.Update();
                 if (button.State == 2)
                     item.SubMenu.Visible = true;
-                else if (!item.SubMenu.MouseInMenu())
+                else if (!item.SubMenu.MouseInMenu() && button.State == 0)
                     exitSubMenuTimer -= Gui.Delta;
                 if (exitSubMenuTimer <= 0f)
                 {
