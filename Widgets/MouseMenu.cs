@@ -34,7 +34,7 @@
             if (Gui.RMouseClicked)
             {
                 // Check if mouse is inside the menu
-                if (!PointRectCollide(Location, Dimensions, Gui.MousePosition))
+                if (!PointRectCollide(Location, Dimensions, Gui.MousePosition) || !Visible)
                 {
                     Visible = true;
                     foreach (Button item in Items) item.Location += Gui.MousePosition - Location;
