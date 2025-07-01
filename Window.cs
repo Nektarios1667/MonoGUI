@@ -54,7 +54,7 @@ namespace MonoGUI
                 new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window---------------------------", Arial),
                 new ScrollBox(Gui, new(800, 100), new(400, 400), Color.Black, Color.Gray, Color.DarkGray),
                 new ScrollBar(Gui, new(1300, 100), 50, Color.Black, Color.Gray),
-                new MouseMenu(Gui, new(1000, 100), new(100, 300), Color.White, GUI.NearBlack, Color.Gray, seperation:1, border:1, borderColor:Color.DarkGray),
+                new MouseMenu(Gui, new(1000, 100), new(100, 300), Color.White, GUI.NearBlack, Color.Gray, seperation:3, border:1, borderColor:Color.DarkGray),
             ];
             // Add items
             ((ListBox)Gui.Widgets[5]).AddItems("Item 1--------------------", "Item 2", "Item 3");
@@ -64,10 +64,10 @@ namespace MonoGUI
             mouseMenu.AddItem("Print", (Action<string>)Console.WriteLine, ["Test..."]);
             mouseMenu.AddItem("Print2", (Action<string>)Console.WriteLine, ["Test2..."]);
             mouseMenu.AddItem("Submenu", null, []);
-            MouseMenu sub = new(Gui, new(0, 0), new(100, 200), Color.White, GUI.NearBlack, Color.Gray, seperation: 1, border:1, borderColor:Color.DarkGray);
+            MouseMenu sub = new(Gui, new(0, 0), new(100, 200), Color.White, GUI.NearBlack, Color.Gray, seperation:3, border:1, borderColor:Color.DarkGray);
             sub.AddItem("Sub Item 1", (Action<string>)Console.WriteLine, ["Sub Item 1"]);
             sub.AddItem("Sub Submenu", null, []);
-            MouseMenu subSub = new(Gui, new(0, 0), new(100, 200), Color.White, GUI.NearBlack, Color.Gray, seperation: 1, border:1, borderColor:Color.DarkGray);
+            MouseMenu subSub = new(Gui, new(0, 0), new(100, 200), Color.White, GUI.NearBlack, Color.Gray, seperation:3, border:1, borderColor:Color.DarkGray);
             subSub.AddItem("Sub Sub Item 1", (Action<string>)Console.WriteLine, ["Sub Sub Item 1"]);
             sub.AddSubMenu("Sub Submenu", subSub);
             mouseMenu.AddSubMenu("Submenu", sub);
