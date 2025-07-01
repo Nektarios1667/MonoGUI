@@ -19,6 +19,7 @@ public class MouseMenu : Widget
     // Private
     private Point lastLocation { get; set; }
     private int itemHeight;
+    private float exitSubMenuTimer = 0f;
     public MouseMenu(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, bool root = true, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
     {
         Dimensions = dimensions;
@@ -65,10 +66,16 @@ public class MouseMenu : Widget
             {
                 item.SubMenu.Location = new Point(Location.X + Dimensions.X - Border, button.Location.Y);
                 item.SubMenu.Update();
-                if (button.State >= 1)
+                if (button.State == 2)
                     item.SubMenu.Visible = true;
                 else if (!item.SubMenu.MouseInMenu())
+                    exitSubMenuTimer -= Gui.Delta;
+                if (exitSubMenuTimer <= 0f)
+                {
                     item.SubMenu.Visible = false;
+                    exitSubMenuTimer = 1f;
+                }
+
             }
 
             // Update y
