@@ -44,6 +44,8 @@
             if ((Gui.LMouseClicked || Gui.MMouseClicked || Gui.RMouseClicked) && !PointRectCollide(Location, Dimensions, Gui.MousePosition))
                 Visible = false;
 
+            // Visible
+            if (!Visible) return;
 
             // Hovering
             foreach (Button item in Items) item.Update();
