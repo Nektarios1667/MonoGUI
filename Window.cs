@@ -47,7 +47,7 @@ namespace MonoGUI
                 new InfoBox(Gui, new(100, 400), new(300, 300), new(100, 400, 300, 300), Color.Gray, Color.Black, "Infobox".PadRight(1000, '-'), Arial),
                 new HorizontalSlider(Gui, new(100, 725), 300, Color.Black, new(35, 35, 35), thickness: 5, size: 15),
                 new VerticalSlider(Gui, new(100, 750), 100, Color.Black, new(35, 35, 35)),
-                new ListBox(Gui, new(650, 50), new(100, 100), Color.White, Color.Black * 0.5f, Color.White * 0.5f, border: 0),
+                new ListBox(Gui, new(650, 50), new(100, 100), Color.White, Color.Black, Color.White, border: 0),
                 new Dropdown(Gui, new(650, 175), new(125, 30), Color.Black, Color.Gray, Color.LightGray, Arial),
                 new Button(Gui, new(500, 10), new(100, 30), Color.White, Color.Gray, Color.DarkGray, Widget.NoFunc, [], text: $"Button---------------", font: Arial),
                 new Checkbox(Gui, new(650, 250), 25, Color.White, Color.Gray, Color.DarkGray),
