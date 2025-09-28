@@ -15,12 +15,12 @@
         public string Selected { get; private set; }
         // Private
         private int itemHeight;
-        public ListBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
+        public ListBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = null, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
             Selected = "";
-            Font = font == default ? gui.Font : font;
+            Font = font ?? gui.Font;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
@@ -51,7 +51,7 @@
             if (!Visible) { return; }
             if (Font == null) { return; }
 
-            Rectangle rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+            Rectangle rect = new(Location, Dimensions);
             // Background
             Gui.Batch.FillRectangle(rect, Color);
             // Outline
@@ -76,7 +76,7 @@
         {
             foreach (string text in texts)
             {
-                Point loc = new(Location.X + Border - Seperation, Location.Y + Border - Seperation + itemHeight * Items.Count);
+                Point loc = new(Location.X + Border, Location.Y + Border + itemHeight * Items.Count);
                 Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
                 Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, Font, border: Seperation, borderColor: BorderColor));
             }
