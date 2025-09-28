@@ -5,20 +5,19 @@
         public int Size { get; private set; }
         public Rectangle Rect
         {
-            get { return new((int)Location.X, (int)Location.Y, Size, Size); }
+            get { return new(Location.X, Location.Y, Size, Size); }
         }
+        public event Action<bool> ValueChanged;
         public Color Color { get; private set; }
         public Color Highlight { get; private set; }
         public Color Foreground { get; private set; }
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
-        public bool Checked { get; private set; }
+        public bool Checked { get; set; }
         public int State { get; private set; }
         public int CheckThickness { get; private set; }
         private Point CheckLocation { get; set; }
         private Point CheckDimensions { get; set; }
-        // Private
-        private MouseState previousState;
         public Checkbox(GUI gui, Point location, int size, Color foreground, Color color, Color highlight, int border = 3, Color borderColor = default, int checkThickness = 4) : base(gui, location)
         {
             Size = size;
@@ -45,6 +44,7 @@
                 if (Gui.LMouseClicked)
                 {
                     Checked = !Checked;
+                    ValueChanged?.Invoke(Checked);
                     State = 2;
                 }
                 else { State = 1; }
