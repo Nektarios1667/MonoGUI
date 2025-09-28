@@ -125,7 +125,7 @@ public class MouseMenu : Widget
     public void AddItem(string text, Delegate? action, object?[] args)
     {
         Point dim = new(Dimensions.X - Border * 2, itemHeight);
-        Button button = new(Gui, Point.Zero, dim, Foreground, Color, Highlight, RunMenuItem, [action, args], text, Font, border: Seperation, borderColor: Color);
+        Button button = new(Gui, Point.Zero, dim, Foreground, Color, Highlight, RunMenuItem, [action, args], text, font: Font, border: Seperation, borderColor: Color);
         MenuItems.Add(new(button));
     }
     public void AddSubMenu(string button, MouseMenu subMenu)

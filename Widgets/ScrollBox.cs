@@ -13,15 +13,17 @@
         public Color BorderColor { get; private set; }
         public List<Button> Items { get; private set; }
         public string Selected { get; private set; }
+        public TextAlign Align { get; private set; }
         // Private
         private VerticalSlider ScrollBar;
         private int itemHeight;
-        public ScrollBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
+        public ScrollBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, TextAlign align = TextAlign.Left, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
             Selected = "";
             Font = font == default ? gui.Font : font;
+            Align = align;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
@@ -90,7 +92,7 @@
             {
                 Point loc = new(Location.X + Border - Seperation, Location.Y + Border / 2 - Seperation + itemHeight * Items.Count);
                 Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
-                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, Font, border: Seperation, borderColor: BorderColor));
+                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, align: Align, font: Font, border: Seperation, borderColor: BorderColor));
             }
         }
         public void SelectItem(string item) { Selected = item; OnItemSelected(item); }

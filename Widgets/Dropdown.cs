@@ -56,16 +56,15 @@
             if (!Visible) { return; }
             if (Font == null || Gui.ArrowDown == null) { return; }
 
-            Rectangle rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+            Rectangle rect = new(Location, Dimensions);
 
             // Draw selection button
             SelectButton.Draw();
 
             // Draw items
             if (Open)
-            {
-                foreach (Button item in Items) { item.Draw(); }
-            }
+                foreach (Button item in Items) 
+                    item.Draw();
 
             // Draw arrows
             arrowSize = (int)Math.Min(Dimensions.X, Dimensions.Y) / 2;
@@ -86,11 +85,11 @@
             {
                 Point loc = new(Location.X + Border, Location.Y + Dimensions.Y - Seperation + itemHeight * Items.Count);
                 Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
-                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, Font, border: Seperation, borderColor: BorderColor));
+                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, font: Font, border: Seperation, borderColor: BorderColor));
             }
         }
         public void ToggleOpen() { Open = !Open; }
-        public void SelectItem(string item) { Selected = item; SelectButton.Modify("Text", LimitString(item, Font, Dimensions.X - Border - arrowSize * 2)); OnItemSelected(item); Open = false; }
+        public void SelectItem(string item) { Selected = item; SelectButton.Modify("Text", LimitString(item, Font!, Dimensions.X - Border - arrowSize * 2)); OnItemSelected(item); Open = false; }
         // When changed value
         public virtual void OnItemSelected(string item)
         {

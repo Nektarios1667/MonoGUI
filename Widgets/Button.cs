@@ -21,9 +21,10 @@ namespace MonoGUI
         public object?[] Args { get; set; }
         public int State { get; private set; }
         public int Shift { get; private set; }
+        public TextAlign Align { get; private set; }
         // Private
         private Vector2 offset;
-        public Button(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, Delegate? function, object?[] args, string text = "", SpriteFont? font = default, int border = 3, Color borderColor = default, int shift = 0) : base(gui, location)
+        public Button(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, Delegate? function, object?[] args, string text = "", TextAlign align = TextAlign.Middle, SpriteFont? font = default, int border = 3, Color borderColor = default, int shift = 0) : base(gui, location)
         {
             Dimensions = dimensions;
             Text = text;
@@ -77,7 +78,12 @@ namespace MonoGUI
 
             // Text
             if (Font != null)
-                Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
+                if (Align == TextAlign.Left)
+                    Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + 2, Location.Y + Border + offset.Y + Shift), Foreground);
+                else if (Align == TextAlign.Right)
+                    Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Dimensions.X - Border - Font.MeasureString(CutoffText).X - 2, Location.Y + Border + offset.Y + Shift), Foreground);
+                else // Middle
+                    Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
             else if (Text != "")
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
         }

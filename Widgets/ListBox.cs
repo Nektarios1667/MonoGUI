@@ -12,15 +12,17 @@
         public int Border { get; private set; }
         public Color BorderColor { get; private set; }
         public List<Button> Items { get; private set; }
+        public TextAlign Align { get; private set; }
         public string Selected { get; private set; }
         // Private
         private int itemHeight;
-        public ListBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = null, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
+        public ListBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = null, TextAlign align = TextAlign.Left, int seperation = 1, int border = 3, Color borderColor = default) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
             Selected = "";
             Font = font ?? gui.Font;
+            Align = align;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
@@ -83,7 +85,7 @@
             {
                 Point loc = new(Location.X + Border, Location.Y + Border + itemHeight * Items.Count);
                 Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
-                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, Font, border: Seperation, borderColor: BorderColor));
+                Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, font: Font, align: Align, border: Seperation, borderColor: BorderColor));
             }
         }
         public void SelectItem(string item) { Selected = item; OnItemSelected(item); }
