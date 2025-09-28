@@ -29,6 +29,7 @@ namespace MonoGUI
             Dimensions = dimensions;
             Text = text;
             Font = font == default ? gui.Font : font;
+            Align = align;
             Foreground = foreground;
             Color = color;
             Highlight = highlight;
@@ -83,7 +84,7 @@ namespace MonoGUI
                 else if (Align == TextAlign.Right)
                     Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Dimensions.X - Border - Font.MeasureString(CutoffText).X - 2, Location.Y + Border + offset.Y + Shift), Foreground);
                 else // Middle
-                    Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
+                    Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y + Shift), Foreground);
             else if (Text != "")
                 Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
         }
