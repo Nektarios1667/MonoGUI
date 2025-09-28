@@ -10,7 +10,7 @@
         public int Thickness { get; private set; }
         public int Size { get; private set; }
         private int State { get; set; }
-        public float Value { get; private set; }
+        public float Value { get; set; }
         // Private
         private bool dragging = false;
         private MouseState previousState;
@@ -72,7 +72,7 @@
         }
 
         // When changed value
-        public virtual void OnValueChanged(float newValue)
+        private void OnValueChanged(float newValue)
         {
             ValueChanged?.Invoke(newValue); // Invoke the event if any listeners are attached
         }

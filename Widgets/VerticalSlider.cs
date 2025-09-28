@@ -10,7 +10,7 @@
         public int Thickness { get; private set; }
         public int Size { get; private set; }
         public int State { get; private set; }
-        public float Value { get; private set; }
+        public float Value { get; set; }
         // Private
         private bool dragging = false;
         public VerticalSlider(GUI gui, Point location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
@@ -70,7 +70,7 @@
         }
 
         // When changed value
-        public virtual void OnValueChanged(float newValue)
+        private void OnValueChanged(float newValue)
         {
             ValueChanged?.Invoke(newValue); // Invoke the event if any listeners are attached
         }
