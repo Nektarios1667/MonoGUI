@@ -67,7 +67,7 @@
                 Gui.Batch.DrawCircle(new(new(Location.X + Value * Length, Location.Y), i), 20, State == 0 ? Color : Highlight);
             }
             // Outline
-            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X + Value * Length, Location.Y), Gui.CircleOutline.Bounds, Color.Black, 0, new(7, 7), Size / 7, SpriteEffects.None, 0f);
+            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X + Value * Length, Location.Y), Gui.CircleOutline.Bounds, Color.Black, 0, new(7, 7), Size / 7.0f, SpriteEffects.None, 0f);
 
         }
 
