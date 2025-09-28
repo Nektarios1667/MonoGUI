@@ -63,10 +63,10 @@
             // Circle
             for (int i = Size - 1; i > 0; i--)
             {
-                Gui.Batch.DrawCircle(new(new(Location.X, Location.Y + Value * Length), i), (int)(Size * 1.5), State == 0 ? Color : Highlight);
+                Gui.Batch.DrawCircle(new(new(Location.X, Location.Y + Value * Length), i), 20, State == 0 ? Color : Highlight);
             }
             // Outline
-            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X, Location.Y + Value * Length), Gui.CircleOutline.Bounds, Color.Black, 0, new(7, 7), Size / 7.0f, SpriteEffects.None, 0f);
+            Gui.Batch.Draw(Gui.CircleOutline, new(Location.X, Location.Y + Value * Length), null, State == 0 ? Color.Black : (State == 1 ? Color.Gray : Color.DarkGray), 0, new(50, 50), Size / 50f, SpriteEffects.None, 0f);
         }
 
         // When changed value
