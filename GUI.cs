@@ -117,4 +117,9 @@ public class GUI
     {
         if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(Math.Clamp(idx, 0, Widgets.Count - 1), widget); }
     }
+    public void AddWidget(Widget widget) { Widgets.Add(widget); }
+    public void AddWidgets(params Widget[] widgets) { Widgets.AddRange(widgets); }
+    public void RemoveWidget(Widget widget) { Widgets.Remove(widget); }
+    public void RemoveWidgets(params Widget[] widgets) { foreach (Widget widget in widgets) Widgets.Remove(widget); }
+
 }
