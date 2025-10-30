@@ -17,7 +17,7 @@
         // Private
         private VerticalSlider ScrollBar;
         private int itemHeight;
-        public ScrollBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, TextAlign align = TextAlign.Left, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default, Color thumbColor = default, Color? thumbHighlight = null, Color? troughColor = null) : base(gui, location)
+        public ScrollBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, TextAlign align = TextAlign.Left, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default, Color? thumbColor = null, Color? thumbHighlight = null, Color? troughColor = null) : base(gui, location)
         {
             Dimensions = dimensions;
             Items = [];
@@ -31,7 +31,7 @@
             Border = border;
             BorderColor = (borderColor == default ? Color.Black : borderColor);
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
-            ScrollBar = new(gui, new(location.X + dimensions.X + border + 5, location.Y + border), dimensions.Y - border * 2, color: thumbColor, highlight: thumbHighlight ?? GUI.NearBlack, background: troughColor ?? Color.Gray);
+            ScrollBar = new(gui, new(location.X + dimensions.X + border + 5, location.Y + border), dimensions.Y - border * 2, color: thumbColor ?? Color.Black, highlight: thumbHighlight ?? GUI.NearBlack, background: troughColor ?? Color.Gray);
         }
         public override void Update()
         {
