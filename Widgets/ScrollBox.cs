@@ -31,7 +31,7 @@
             Border = border;
             BorderColor = (borderColor == default ? Color.Black : borderColor);
             itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
-            ScrollBar = new(gui, new(location.X + dimensions.X + border + 5, location.Y + border), dimensions.Y - border * 2, thumbColor, thumbHighlight ?? GUI.NearBlack, troughColor ?? Color.Gray);
+            ScrollBar = new(gui, new(location.X + dimensions.X + border + 5, location.Y + border), dimensions.Y - border * 2, color: thumbColor, highlight: thumbHighlight ?? GUI.NearBlack, backhround: troughColor ?? Color.Gray);
         }
         public override void Update()
         {
