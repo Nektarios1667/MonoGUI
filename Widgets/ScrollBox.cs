@@ -46,7 +46,15 @@
             {
                 // Item
                 Button item = Items[b];
-                // Location                                              default location                              scrolling             extra line                 remove one page
+                // Location
+                if (Items.Count * itemHeight > Dimensions.Y - Border * 2)
+                    ScrollBar.Visible = true;
+                else
+                {
+                    ScrollBar.Visible = false;
+                    ScrollBar.Value = 0;
+                }
+                // default location                              scrolling             extra line                 remove one page
                 item.Location = new(item.Location.X, Location.Y + Border - Seperation + (itemHeight * b) - (int)(ScrollBar.Value * itemHeight * (Items.Count + 1)) + (int)(ScrollBar.Value * Dimensions.Y));
                 // Check X
                 if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X > Location.X + Dimensions.X) { continue; }
