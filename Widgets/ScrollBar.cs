@@ -41,9 +41,10 @@
                     dragging = true;
 
                     // Change
-                    if (move != 0)
+                    if (Gui.MousePosition.Y - Gui.LastMouseState.Position.Y != 0)
                     {
-                        Value = Math.Clamp((Value + move), 0f, 1f);
+                        Value = Math.Clamp((Gui.MousePosition.Y - Location.Y) / (float)Length, 0, 1);
+                        Value = Math.Clamp(Value + Value * (BarSize / (float)Length), 0, 1);
                         OnValueChanged(Value);
                     }
                 }
@@ -60,7 +61,7 @@
             // Background
             Gui.Batch.FillRectangle(new(Location.X, Location.Y, Width, Length), Background);
             // Square
-            Gui.Batch.FillRectangle(new(Location.X, Location.Y + (Value * Length), Width, BarSize), Color);
+            Gui.Batch.FillRectangle(new(Location.X, Location.Y + ((Value - Value * (BarSize / (float)Length)) * Length), Width, BarSize), Color);
         }
 
         // When changed value
