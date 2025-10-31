@@ -39,6 +39,13 @@
             if (!Visible) { return; }
 
             // Scrollbar
+            if (Items.Count * itemHeight > Dimensions.Y - Border * 2)
+                ScrollBar.Visible = true;
+            else
+            {
+                ScrollBar.Visible = false;
+                ScrollBar.Value = 0;
+            }
             ScrollBar.Update();
 
             // Hovering
@@ -47,13 +54,6 @@
                 // Item
                 Button item = Items[b];
                 // Location
-                if (Items.Count * itemHeight > Dimensions.Y - Border * 2)
-                    ScrollBar.Visible = true;
-                else
-                {
-                    ScrollBar.Visible = false;
-                    ScrollBar.Value = 0;
-                }
                 // default location                              scrolling             extra line                 remove one page
                 item.Location = new(item.Location.X, Location.Y + Border - Seperation + (itemHeight * b) - (int)(ScrollBar.Value * itemHeight * (Items.Count + 1)) + (int)(ScrollBar.Value * Dimensions.Y));
                 // Check X
