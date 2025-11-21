@@ -85,6 +85,11 @@
                 if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y > Location.Y + Dimensions.Y) { continue; }
                 // Draw
                 item.Draw();
+                if (Selected == item.Text)
+                {
+                    Rectangle highlightRect = new(item.Location.X + Border + 1, item.Location.Y + Border + 1, item.Dimensions.X - Border * 2 - 2, item.Dimensions.Y - Border * 2 - 2);
+                    Gui.Batch.FillRectangle(highlightRect, Highlight * 0.5f);
+                }
             }
 
             // Scrollbar
