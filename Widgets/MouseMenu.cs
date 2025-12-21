@@ -14,6 +14,7 @@ public class MouseMenu : Widget
     public int Seperation { get; private set; }
     public int Border { get; private set; }
     public Color BorderColor { get; private set; }
+    public int ItemBorder { get; set; }
     public List<MenuItem> MenuItems { get; private set; }
     public bool Root { get; set; }
     // Private
@@ -31,10 +32,11 @@ public class MouseMenu : Widget
         Seperation = seperation;
         Border = border;
         BorderColor = (borderColor == default ? Color.Black : borderColor);
+        ItemBorder = seperation;
         Root = root;
         Visible = false;
         lastLocation = Location;
-        itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
+        itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 4 : 0;
     }
     public override void Update()
     {
@@ -125,7 +127,7 @@ public class MouseMenu : Widget
     public void AddItem(string text, Delegate? action, object?[] args)
     {
         Point dim = new(Dimensions.X - Border * 2, itemHeight);
-        Button button = new(Gui, Point.Zero, dim, Foreground, Color, Highlight, RunMenuItem, [action, args], text, font: Font, border: Seperation, borderColor: Color);
+        Button button = new(Gui, Point.Zero, dim, Foreground, Color, Highlight, RunMenuItem, [action, args], text, font: Font, border: ItemBorder);
         MenuItems.Add(new(button));
     }
     public void AddSubMenu(string button, MouseMenu subMenu)
