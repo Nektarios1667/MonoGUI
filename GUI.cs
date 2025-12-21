@@ -1,11 +1,10 @@
-﻿global using System;
-global using System.Collections.Generic;
-global using Microsoft.Xna.Framework;
+﻿global using Microsoft.Xna.Framework;
 global using Microsoft.Xna.Framework.Content;
 global using Microsoft.Xna.Framework.Graphics;
 global using Microsoft.Xna.Framework.Input;
 global using MonoGame.Extended;
-
+global using System;
+global using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -105,7 +104,7 @@ public class GUI
         string prepend = filepath == "" ? "" : filepath + Path.DirectorySeparatorChar;
         CircleOutline = content.Load<Texture2D>($"{prepend}CircleOutline");
         ArrowDown = content.Load<Texture2D>($"{prepend}ArrowDown");
-        
+
         _loaded = true;
     }
     // Layers

@@ -1,21 +1,19 @@
 ﻿using System.Linq;
-using System.Reflection.Emit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoGUI;
 
 public class MouseMenu : Widget
 {
-    public Point Dimensions { get; private set; }
-    public Color Color { get; private set; }
-    public Color Highlight { get; private set; }
-    public SpriteFont? Font { get; private set; }
-    public Color Foreground { get; private set; }
-    public int Seperation { get; private set; }
-    public int Border { get; private set; }
-    public Color BorderColor { get; private set; }
+    public Point Dimensions { get; set; }
+    public Color Color { get; set; }
+    public Color Highlight { get; set; }
+    public SpriteFont? Font { get; set; }
+    public Color Foreground { get; set; }
+    public int Seperation { get; set; }
+    public int Border { get; set; }
+    public Color BorderColor { get; set; }
     public int ItemBorder { get; set; }
-    public List<MenuItem> MenuItems { get; private set; }
+    public List<MenuItem> MenuItems { get; set; }
     public bool Root { get; set; }
     // Private
     private Point lastLocation { get; set; }
@@ -90,7 +88,7 @@ public class MouseMenu : Widget
         if (!Visible) { return; }
         if (Font == null) { return; }
 
-        Rectangle rect = new((int)Location.X, (int)Location.Y, (int)Dimensions.X, (int)Dimensions.Y);
+        Rectangle rect = new(Location.X, Location.Y, Dimensions.X, Dimensions.Y);
         // Background
         Gui.Batch.FillRectangle(rect, Color);
         // Outline

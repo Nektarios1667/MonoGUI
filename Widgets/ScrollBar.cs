@@ -1,73 +1,71 @@
-﻿namespace MonoGUI
+﻿namespace MonoGUI;
+
+public class ScrollBar : Widget
 {
-    public class ScrollBar : Widget
+    public event Action<float> ValueChanged;
+    public int Length { get; set; }
+    public Color Color { get; set; }
+    public Color Highlight { get; set; }
+    public Color Background { get; set; }
+    public int Width { get; set; }
+    public int State { get; private set; }
+    public float Value { get; private set; }
+    public int BarSize { get; set; }
+    // Private
+    private bool dragging = false;
+    public ScrollBar(GUI gui, Point location, int length, Color color, Color highlight, int barSize = 20, Color? background = null, int width = 10, int size = 7) : base(gui, location)
     {
-        public event Action<float> ValueChanged;
-        public int Length { get; private set; }
-        public Color Color { get; private set; }
-        public Color Highlight { get; private set; }
-        public Color Background { get; private set; }
-        public int Width { get; private set; }
-        public int State { get; private set; }
-        public float Value { get; private set; }
-        public int BarSize { get; private set; }
-        // Private
-        private bool dragging = false;
-        public ScrollBar(GUI gui, Point location, int length, Color color, Color highlight, int barSize = 20, Color? background = null, int width = 10, int size = 7) : base(gui, location)
-        {
-            Length = length;
-            Color = color;
-            Highlight = highlight;
-            BarSize = barSize;
-            Background = background ?? Color.DarkGray;
-            Width = width;
-            Value = 0;
-            State = 0; // 0 = nothing, 1 = hover, 2 = click
-        }
-        public override void Update()
-        {
-            // Hidden
-            if (!Visible) { return; }
+        Length = length;
+        Color = color;
+        Highlight = highlight;
+        BarSize = barSize;
+        Background = background ?? Color.DarkGray;
+        Width = width;
+        Value = 0;
+        State = 0; // 0 = nothing, 1 = hover, 2 = click
+    }
+    public override void Update()
+    {
+        // Hidden
+        if (!Visible) { return; }
 
-            // Hovering
-            if (PointRectCollide(new Rectangle(Location.X, (int)(Location.Y + (Value * Length)), Width, Length), Gui.MousePosition) || dragging)
+        // Hovering
+        if (PointRectCollide(new Rectangle(Location.X, (int)(Location.Y + (Value * Length)), Width, Length), Gui.MousePosition) || dragging)
+        {
+            // Clicking
+            if (Gui.LMouseDown)
             {
-                // Clicking
-                if (Gui.LMouseDown)
+                // Update
+                State = 2;
+                dragging = true;
+
+                // Change
+                if (Gui.MousePosition.Y - Gui.LastMouseState.Position.Y != 0)
                 {
-                    // Update
-                    State = 2;
-                    float move = (Gui.MousePosition.Y - Gui.LastMouseState.Position.Y) / (float)Length;
-                    dragging = true;
-
-                    // Change
-                    if (Gui.MousePosition.Y - Gui.LastMouseState.Position.Y != 0)
-                    {
-                        Value = Math.Clamp((Gui.MousePosition.Y - Location.Y) / (float)Length, 0, 1);
-                        Value = Math.Clamp(Value + Value * (BarSize / (float)Length), 0, 1);
-                        OnValueChanged(Value);
-                    }
+                    Value = Math.Clamp((Gui.MousePosition.Y - Location.Y) / (float)Length, 0, 1);
+                    Value = Math.Clamp(Value + Value * (BarSize / (float)Length), 0, 1);
+                    OnValueChanged(Value);
                 }
-                else { dragging = false; State = 1; }
             }
-            else { dragging = false; State = 0; }
+            else { dragging = false; State = 1; }
         }
+        else { dragging = false; State = 0; }
+    }
 
-        public override void Draw()
-        {
-            // Not drawing
-            if (!Visible) { return; }
+    public override void Draw()
+    {
+        // Not drawing
+        if (!Visible) { return; }
 
-            // Background
-            Gui.Batch.FillRectangle(new(Location.X, Location.Y, Width, Length), Background);
-            // Square
-            Gui.Batch.FillRectangle(new(Location.X, Location.Y + ((Value - Value * (BarSize / (float)Length)) * Length), Width, BarSize), Color);
-        }
+        // Background
+        Gui.Batch.FillRectangle(new(Location.X, Location.Y, Width, Length), Background);
+        // Square
+        Gui.Batch.FillRectangle(new(Location.X, Location.Y + ((Value - Value * (BarSize / (float)Length)) * Length), Width, BarSize), Color);
+    }
 
-        // When changed value
-        public virtual void OnValueChanged(float newValue)
-        {
-            ValueChanged?.Invoke(newValue); // Invoke the event if any listeners are attached
-        }
+    // When changed value
+    public virtual void OnValueChanged(float newValue)
+    {
+        ValueChanged?.Invoke(newValue); // Invoke the event if any listeners are attached
     }
 }

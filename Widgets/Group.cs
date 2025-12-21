@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MonoGUI.Widgets;
+﻿namespace MonoGUI.Widgets;
 public class Group : Widget
 {
-    public List<Widget> Widgets { get; private set; } = new List<Widget>();
+    public List<Widget> Widgets { get; private set; } = [];
     public Group(GUI gui) : base(gui, Point.Zero) { }
     public override void Update()
     {
