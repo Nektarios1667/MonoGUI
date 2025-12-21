@@ -34,7 +34,7 @@ public class MouseMenu : Widget
         Root = root;
         Visible = false;
         lastLocation = Location;
-        itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 4 : 0;
+        itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
     }
     public override void Update()
     {
