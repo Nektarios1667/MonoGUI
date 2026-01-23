@@ -49,7 +49,7 @@ public class Window : Game
             new VerticalSlider(Gui, new(100, 750), 100, Color.Black, new(35, 35, 35)),
             new ListBox(Gui, new(650, 50), new(100, 100), Color.White, Color.Black, Color.White, border: 0),
             new Dropdown(Gui, new(650, 175), new(125, 30), Color.Black, Color.Gray, Color.LightGray, Arial),
-            new Button(Gui, new(500, 10), new(100, 30), Color.White, Color.Gray, Color.DarkGray, Widget.NoFunc, [], text: $"Button---------------", font: Arial),
+            new Button(Gui, new(500, 10), new(100, 30), Color.White, Color.Gray, Color.DarkGray, Widget.NoFunc, [], text: $"Button---------------", font: Arial) { Enabled = false },
             new Checkbox(Gui, new(650, 250), 25, Color.White, Color.Gray, Color.DarkGray),
             new Popup(Gui, new(100, 135), new(200, 200), Color.DarkGray, "Popup Window---------------------------", Arial),
             new ScrollBox(Gui, new(800, 100), new(400, 400), Color.Black, Color.Gray, Color.DarkGray),

@@ -5,9 +5,10 @@ namespace MonoGUI;
 public abstract class Widget
 {
     public Point Location { get; set; }
-    public bool Visible { get; set; }
+    public bool Visible { get; set; } = true;
+    public bool Enabled { get; set; } = true;
     public GUI Gui { get; set; }
-    public Widget(GUI gui, Point location) { Gui = gui; Location = location; Visible = true; }
+    public Widget(GUI gui, Point location) { Gui = gui; Location = location; }
     public abstract void Update();
     public abstract void Draw();
     public virtual void Reload() { }
@@ -20,8 +21,7 @@ public abstract class Widget
         if (propertyInfo == null || (!char.IsUpper(property[0]) && !allowHidden)) { throw new ArgumentException($"{GetType()} widget does not have property {property}"); }
 
         // Check if new value and set
-        if (!object.Equals(propertyInfo.GetValue(this), value)) { propertyInfo.SetValue(this, value); }
-        ;
+        if (!Equals(propertyInfo.GetValue(this), value)) { propertyInfo.SetValue(this, value); }
 
         // Relaod needed info
         Reload();

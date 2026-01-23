@@ -89,7 +89,9 @@ public class GUI
         KeyState = keyState;
 
         // Updates
-        foreach (Widget widget in Widgets) { widget.Update(); }
+        foreach (Widget widget in Widgets)
+            if (widget.Enabled)
+                widget.Update();
 
         // Last
         LastMouseState = MouseState;
