@@ -78,11 +78,11 @@ public class Button : Widget
         // Text
         if (Font != null)
             if (Align == TextAlign.Left)
-                Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + 2, Location.Y + Border + offset.Y + Shift), Foreground);
+                Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + 2, Location.Y + Border + offset.Y), Foreground);
             else if (Align == TextAlign.Right)
                 Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Dimensions.X - Border - Font.MeasureString(CutoffText).X - 2, Location.Y + Border + offset.Y + Shift), Foreground);
             else // Middle
-                Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y + Shift), Foreground);
+                Gui.Batch.DrawString(Font, CutoffText, new(Location.X + Border + offset.X + Shift, Location.Y + Border + offset.Y), Foreground);
         else if (Text != "")
             Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
     }
