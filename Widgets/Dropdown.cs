@@ -56,8 +56,6 @@ public class Dropdown : Widget
         if (!Visible) { return; }
         if (Font == null || Gui.ArrowDown == null) { return; }
 
-        Rectangle rect = new(Location, Dimensions);
-
         // Draw selection button
         SelectButton.Draw();
 
