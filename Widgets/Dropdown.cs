@@ -1,7 +1,8 @@
 ﻿namespace MonoGUI;
 
-public class Dropdown : Widget
+public class Dropdown : Widget, ILinkable
 {
+    public string LinkableValue => Selected;
     public event Action<string> ItemSelected;
     public Point Dimensions { get; set; }
     public Color Color { get; set; }

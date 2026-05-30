@@ -1,7 +1,10 @@
-﻿namespace MonoGUI;
+﻿using static System.Net.Mime.MediaTypeNames;
 
-public class ScrollBox : Widget
+namespace MonoGUI;
+
+public class ScrollBox : Widget, ILinkable
 {
+    public string LinkableValue => ScrollBar.LinkableValue;
     public event Action<string> ItemSelected;
     public Point Dimensions { get; set; }
     public Color Color { get; set; }

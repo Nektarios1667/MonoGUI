@@ -1,7 +1,8 @@
 ﻿namespace MonoGUI;
 
-public class InfoBox : Widget
+public class InfoBox : Widget, ILinkable
 {
+    public string LinkableValue => Visible.ToString();
     public Point Dimensions { get; set; }
     public Rectangle Rect { get; set; }
     public Color Color { get; set; }

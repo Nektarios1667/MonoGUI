@@ -1,7 +1,8 @@
 ﻿namespace MonoGUI;
 
-public class Button : Widget
+public class Button : Widget, ILinkable
 {
+    public string LinkableValue => (State == 2).ToString();
     public Point Dimensions { get; set; }
     public string Text { get; set; }
     private string CutoffText { get; set; }

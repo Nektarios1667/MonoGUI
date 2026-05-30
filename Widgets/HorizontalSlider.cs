@@ -1,7 +1,8 @@
 ﻿namespace MonoGUI;
 
-public class HorizontalSlider : Widget
+public class HorizontalSlider : Widget, ILinkable
 {
+    public string LinkableValue => Value.ToString();
     public event Action<float>? ValueChanged;
     public int Length { get; set; }
     public Color Color { get; set; }

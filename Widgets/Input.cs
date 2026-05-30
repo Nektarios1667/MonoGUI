@@ -2,8 +2,9 @@
 
 namespace MonoGUI;
 
-public class Input : Widget
+public class Input : Widget, ILinkable
 {
+    public string LinkableValue => Text;
     public Point Dimensions { get; set; }
     public string Text { get; set; }
     public Rectangle Rect

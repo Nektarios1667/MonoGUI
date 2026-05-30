@@ -1,7 +1,8 @@
 ﻿namespace MonoGUI;
 
-public class Label : Widget
+public class Label : Widget, ILinkable
 {
+    public string LinkableValue => Text;
     public string Text { get; set; }
     public Color Color { get; set; }
     public SpriteFont? Font { get; set; }

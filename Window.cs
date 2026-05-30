@@ -55,8 +55,10 @@ public class Window : Game
             new ScrollBox(Gui, new(800, 100), new(400, 400), Color.Black, Color.Gray, Color.DarkGray),
             new ScrollBar(Gui, new(1300, 100), 200, Color.Black, Color.Gray),
             new MouseMenu(Gui, new(1000, 100), new(100, 300), Color.White, GUI.NearBlack * 0.5f, Color.Gray * 0.5f, seperation:3, border:1, borderColor:Color.DarkGray * 0.5f) { ItemBorder = 0 },
+            new LinkedLabel(Gui, new(100, 400), Color.Black, null, "<", ">", Arial),
         ];
         // Add items
+        ((LinkedLabel)Gui.Widgets[13]).Link = (Input)Gui.Widgets[1];
         ((ListBox)Gui.Widgets[5]).AddItems("Item 1--------------------", "Item 2", "Item 3");
         ((Dropdown)Gui.Widgets[6]).AddItems("Selection 1---------------------", "Selection 2", "Selection 3");
         ((ScrollBox)Gui.Widgets[10]).AddItems(Enumerable.Range(1, 150).Select(i => $"Item {i}").ToArray());

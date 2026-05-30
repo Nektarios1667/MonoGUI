@@ -1,7 +1,8 @@
 ﻿namespace MonoGUI;
 
-public class Checkbox : Widget
+public class Checkbox : Widget, ILinkable
 {
+    public string LinkableValue => Checked.ToString();
     public int Size { get; set; }
     public Rectangle Rect
     {
