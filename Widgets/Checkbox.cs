@@ -79,4 +79,9 @@ public class Checkbox : Widget, ILinkable
     public void Uncheck() { Checked = false; ValueChanged?.Invoke(Checked); }
 
     public void Toggle() { Checked = !Checked; ValueChanged?.Invoke(Checked); }
+    public void SetValue(bool value)
+    {
+        Checked = value;
+        ValueChanged?.Invoke(Checked);
     }
+}
