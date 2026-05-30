@@ -14,7 +14,7 @@ public class Checkbox : Widget, ILinkable
     public Color Foreground { get; set; }
     public int Border { get; set; }
     public Color BorderColor { get; set; }
-    public bool Checked { get; set; }
+    public bool Checked { get; private set; }
     public int State { get; set; }
     public int CheckThickness { get; set; }
     private Point CheckLocation { get; set; }
@@ -74,4 +74,9 @@ public class Checkbox : Widget, ILinkable
         int checkSize = Size - CheckThickness - Border * 2;
         CheckDimensions = new(checkSize, checkSize);
     }
-}
+    public void Check() { Checked = true; ValueChanged?.Invoke(Checked); }
+
+    public void Uncheck() { Checked = false; ValueChanged?.Invoke(Checked); }
+
+    public void Toggle() { Checked = !Checked; ValueChanged?.Invoke(Checked); }
+    }

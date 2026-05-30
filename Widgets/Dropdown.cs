@@ -13,7 +13,7 @@ public class Dropdown : Widget, ILinkable
     public int Border { get; set; }
     public Color BorderColor { get; set; }
     public List<Button> Items { get; set; }
-    public string Selected { get; set; }
+    public string Selected { get; private set; }
     public bool Open { get; set; }
     public Button SelectButton { get; private set; }
     // private

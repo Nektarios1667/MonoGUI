@@ -47,7 +47,7 @@ public class ScrollBox : Widget, ILinkable
         else
         {
             ScrollBar.Visible = false;
-            ScrollBar.Value = 0;
+            ScrollBar.SetValue(0);
         }
         ScrollBar.Update();
 

@@ -13,7 +13,7 @@ public class VerticalSlider : Widget, ILinkable
     public int Thickness { get; set; }
     public int Size { get; set; }
     public int State { get; private set; }
-    public float Value { get; set; }
+    public float Value { get; private set; }
     // Private
     private bool dragging = false;
     public VerticalSlider(GUI gui, Point location, int length, Color color, Color highlight, Color? background = null, int thickness = 3, int size = 7) : base(gui, location)
@@ -71,5 +71,10 @@ public class VerticalSlider : Widget, ILinkable
     private void OnValueChanged(float newValue)
     {
         ValueChanged?.Invoke(newValue); // Invoke the event if any listeners are attached
+    }
+    public void SetValue(float newValue)
+    {
+        Value = Math.Clamp(newValue, 0, 1);
+        OnValueChanged(Value); // Invoke the event when value is set programmatically
     }
 }
