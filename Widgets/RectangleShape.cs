@@ -8,13 +8,13 @@ namespace MonoGUI.Widgets;
 
 public class RectangleShape : Widget
 {
-    public Microsoft.Xna.Framework.Rectangle Rect { get; set; }
+    public Point Size { get; set; }
     public Color FillColor { get; set; }
     public Color BorderColor { get; set; }
     public int BorderThickness { get; set; }
     public RectangleShape(GUI gui, Point location, Point size, Color fill, Color border, int borderThickness) : base(gui, location)
     {
-        Rect = new(location, size);
+        Size = size;
         FillColor = fill;
         BorderColor = border;
         BorderThickness = borderThickness;
@@ -22,7 +22,7 @@ public class RectangleShape : Widget
     public override void Update() { }
     public override void Draw()
     {
-        Gui.Batch.FillRectangle(Rect, FillColor);
-        Gui.Batch.DrawRectangle(Rect, BorderColor, BorderThickness);
+        Gui.Batch.FillRectangle(new(Location.ToVector2(), Size), FillColor);
+        Gui.Batch.DrawRectangle(new(Location.ToVector2(), Size), BorderColor, BorderThickness);
     }
 }
