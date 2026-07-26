@@ -12,10 +12,10 @@
 	<!-- NuGet Package Metadata -->
 	<PropertyGroup>
 		<PackageId>MonoGUI</PackageId>
-		<Version>1.11.6</Version>
+		<Version>1.11.6.1</Version>
 		<Authors>Nektarios</Authors>
 		<Description>A simple GUI toolkit for MonoGame with simple customizable widgets.</Description>
-		<PackageTags>monogame;gui</PackageTags>
+		<PackageTags>monogame;gui;ui</PackageTags>
 		<RepositoryUrl>https://github.com/Nektarios1667/MonoGUI</RepositoryUrl>
 	</PropertyGroup>
 
