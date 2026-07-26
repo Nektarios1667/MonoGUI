@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace MonoGUI.Widgets;
 
-public class Rectangle : Widget
+public class RectangleShape : Widget
 {
     public Microsoft.Xna.Framework.Rectangle Rect { get; set; }
     public Color FillColor { get; set; }
     public Color BorderColor { get; set; }
     public int BorderThickness { get; set; }
-    public Rectangle(GUI gui, Point location, Point size, Color fill, Color border, int borderThickness) : base(gui, location)
+    public RectangleShape(GUI gui, Point location, Point size, Color fill, Color border, int borderThickness) : base(gui, location)
     {
         Rect = new(location, size);
         FillColor = fill;
