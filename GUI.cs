@@ -106,7 +106,7 @@ public sealed class GUI : IDisposable
     {
         CircleOutline?.Dispose();
         ArrowDown?.Dispose();
-        CircleOutline = CreateCircleOutline();
+        CircleOutline = CreateCircle();
         ArrowDown = CreateArrowDown();
         _loaded = true;
     }
@@ -146,18 +146,21 @@ public sealed class GUI : IDisposable
         _loaded = false;
     }
 
-    private Texture2D CreateCircleOutline()
+    private Texture2D CreateCircle()
     {
         const int size = 25;
         const float center = (size - 1) / 2f;
         const float outerRadius = 11.5f;
-        const float innerRadius = 0f;
         Color[] pixels = new Color[size * size];
         for (int y = 0; y < size; y++)
         for (int x = 0; x < size; x++)
         {
             float distance = Vector2.Distance(new Vector2(x, y), new Vector2(center));
-            pixels[y * size + x] = distance is <= outerRadius and >= innerRadius ? Color.White : Color.Transparent;
+            if (distance <= outerRadius)
+                pixels[y * size + x] = Color.White;
+            else if (distance - outerRadius <= 1)
+                pixels[y* size + x] = Color.Lerp(Color.White, Color.Transparent, distance - outerRadius);
+               
         }
         Texture2D texture = new(Batch.GraphicsDevice, size, size);
         texture.SetData(pixels);

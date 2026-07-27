@@ -3,7 +3,7 @@
 MonoGUI is a lightweight C# GUI library for MonoGame. Version 2.0 is a package-first library release: it no longer ships a demo executable or requires compiled `.xnb` assets.
 
 ## Features
-- Supports buttons, labels, text inputs, popups, lists, menus, sliders, and scroll views.
+- Supports buttons, labels, text inputs, radio buttons, popups, lists, menus, sliders, and scroll views.
 - Customizable colors and styles.
 - Events for clicks, selections, text updates, submissions, and value changes.
 - Built-in slider and dropdown glyphs generated at runtime—no content-pipeline setup required.
@@ -20,6 +20,8 @@ MonoGUI is a lightweight C# GUI library for MonoGame. Version 2.0 is a package-f
 - ListBox
 - Popup
 - VerticalSlider
+- RadioButton / RadioGroup
+- ProgressBar
 
 ## Installation
 The source code can be directly downloaded and added to the project.  
@@ -109,12 +111,34 @@ input.TextChanged += value => Console.WriteLine($"Text: {value}");
 input.Submitted += value => Console.WriteLine($"Submitted: {value}");
 ```
 
+### Radio buttons
+
+```csharp
+var difficulty = new RadioGroup();
+var easy = new RadioButton(Gui, new(50, 150), "Easy", Color.Black, Color.Black, Color.Gray, difficulty, font);
+var hard = new RadioButton(Gui, new(50, 180), "Hard", Color.Black, Color.Black, Color.Gray, difficulty, font);
+difficulty.SelectionChanged += choice => Console.WriteLine(choice?.Text);
+difficulty.Select(easy);
+Gui.AddWidgets(easy, hard);
+```
+
+### Progress bars
+
+```csharp
+var progress = new ProgressBar(Gui, new(50, 230), new(300, 26), Color.DarkGray, Color.LimeGreen,
+    value: 0.65f, showPercentage: true, font: font);
+progress.ValueChanged += value => Console.WriteLine($"Progress: {value:P0}");
+Gui.AddWidget(progress);
+```
+
+`ProgressBar` supports left-to-right, right-to-left, bottom-to-top, and top-to-bottom fill directions.
+
 ## What's new in 2.0
 
 - Fixed front-layering, text wrapping and truncation edge cases, slider track clicks, checkbox duplicate notifications, and scrollbar dragging.
 - Rebuilt `Input` with keyboard repeat, cursor positioning, Delete/Home/End, Caps Lock support, placeholders, maximum length, and text events.
 - Rebuilt `ScrollBar` and `ScrollBox` around a real viewport and proportional thumb.
-- Added `Button.Clicked`, `Input.TextChanged`, `Input.Submitted`, `Input.Clear`, `ScrollBox.ClearItems`, `ScrollBox.ScrollBar`, and `GUI.Dispose`.
+- Added `Button.Clicked`, `Input.TextChanged`, `Input.Submitted`, `Input.Clear`, `ScrollBox.ClearItems`, `ScrollBox.ScrollBar`, `RadioButton` / `RadioGroup`, `ProgressBar`, and `GUI.Dispose`.
 - `GUI.Widgets` is now intentionally read-only as a property; use `AddWidget`, `AddWidgets`, or its list methods to manage widgets.
 
 ## [License](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)
