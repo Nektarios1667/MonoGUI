@@ -1,211 +1,197 @@
-﻿using System.Linq;
-
 namespace MonoGUI;
 
+/// <summary>A single-line text editor with keyboard repeat, a caret, placeholder text, and change notifications.</summary>
 public class Input : Widget, ILinkable
 {
+    private const float InitialRepeatDelay = 0.45f;
+    private const float RepeatInterval = 0.05f;
+    private readonly Dictionary<Keys, float> _heldKeys = [];
+    private float _blink;
+    private int _cursorX;
+    private Vector2 _characterSize;
+
     public string LinkableValue => Text;
     public Point Dimensions { get; set; }
-    public string Text { get; set; }
-    public Rectangle Rect
-    {
-        get { return new(Location.X, Location.Y, Dimensions.X, Dimensions.Y); }
-    }
+    public string Text { get; private set; } = string.Empty;
+    public Rectangle Rect => new(Location, Dimensions);
     public Color Color { get; set; }
     public Color Highlight { get; set; }
     public SpriteFont? Font { get; set; }
     public Color Foreground { get; set; }
-    public Delegate? Function { get; set; }
+    public Color PlaceholderColor { get; set; } = Color.Gray;
+    public string Placeholder { get; set; } = string.Empty;
     public int Border { get; set; }
     public Color BorderColor { get; set; }
-    public object?[]? Args { get; set; }
-    public bool Selected { get; set; }
-    public int Cursor { get; set; }
-    // Private
-    private float blink = 0;
-    private int cursorX = 0;
-    private int textsize = 0;
-    private Dictionary<Keys, float> keyHoldTimes = new();
-    private Dictionary<Keys, float> keyHoldPauses = new();
-    private Vector2 charsize;
-    // Key mapping
-    private readonly Dictionary<string, char> specialKeys = new()
+    public bool Selected { get; private set; }
+    public int Cursor { get; private set; }
+    public int MaxLength { get; set; }
+    public event Action<string>? TextChanged;
+    public event Action<string>? Submitted;
+
+    public Input(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight,
+        SpriteFont? font = default, int border = 3, Color borderColor = default) : base(gui, location)
     {
-        ["OemPeriod"] = '.',
-        ["OemComma"] = ',',
-        ["OemQuestion"] = '/',
-        ["OemSemicolon"] = ';',
-        ["OemQuotes"] = '\'',
-        ["OemPlus"] = '=',
-        ["OemMinus"] = '-',
-        ["OemPipe"] = '\\',
-        ["OemOpenBrackets"] = '[',
-        ["OemCloseBrackets"] = ']',
-        ["OemTilde"] = '`',
-        ["Space"] = ' ',
-        ["D1"] = '1',
-        ["D2"] = '2',
-        ["D3"] = '3',
-        ["D4"] = '4',
-        ["D5"] = '5',
-        ["D6"] = '6',
-        ["D7"] = '7',
-        ["D8"] = '8',
-        ["D9"] = '9',
-        ["D0"] = '0',
-    };
-    private readonly Dictionary<string, char> upperSymbols = new()
-    {
-        ["D1"] = '!',
-        ["D2"] = '@',
-        ["D3"] = '#',
-        ["D4"] = '$',
-        ["D5"] = '%',
-        ["D6"] = '^',
-        ["D7"] = '&',
-        ["D8"] = '*',
-        ["D9"] = '(',
-        ["D0"] = ')',
-        ["OemPeriod"] = '>',
-        ["OemComma"] = '<',
-        ["OemQuestion"] = '?',
-        ["OemSemicolon"] = ':',
-        ["OemQuotes"] = '"',
-        ["OemPlus"] = '+',
-        ["OemMinus"] = '_',
-        ["OemPipe"] = '|',
-        ["OemOpenBrackets"] = '{',
-        ["OemCloseBrackets"] = '}',
-        ["OemTilde"] = '~',
-    };
-    private string[] controlKeys = ["Back", "Left", "Right"];
-    public Input(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = default, int border = 3, Color borderColor = default) : base(gui, location)
-    {
+        if (dimensions.X <= 0 || dimensions.Y <= 0) throw new ArgumentOutOfRangeException(nameof(dimensions));
         Dimensions = dimensions;
-        Text = "";
-        charsize = font != null ? font.MeasureString("_") : new(0, 0);
-        Font = font == default ? gui.Font : font;
+        Font = font ?? gui.Font;
         Foreground = foreground;
         Color = color;
         Highlight = highlight;
-        Border = border;
-        BorderColor = borderColor == default ? Color.Black : borderColor;
-        Selected = false;
-        Cursor = 0;
+        Border = Math.Max(0, border);
+        BorderColor = borderColor == default ? Microsoft.Xna.Framework.Color.Black : borderColor;
         Reload();
     }
+
     public override void Update()
     {
-        // Hidden
-        if (!Visible) { return; }
-        if (Font == null) { return; }
+        if (!Visible || !Enabled || Font is null) return;
 
-        // Blink
-        if (Selected) { blink = (blink + Gui.Delta) % 1f; }
-        else blink = .499f;
-
-        // Clicking
         if (Gui.LMouseClicked)
         {
-            // Checks
-            if (PointRectCollide(Location, Dimensions, Gui.MousePosition)) { Selected = true; }
-            else { Selected = false; }
+            Selected = Rect.Contains(Gui.MousePosition);
+            if (Selected) Cursor = GetCursorAt(Gui.MousePosition.X - Location.X - Border);
+            _blink = 0f;
         }
 
-        // Typing
-        Keys[] pressed = Gui.KeysPressed;
-        if (!Selected) { return; }
-        bool shifted = Gui.AnyKeyDown(Keys.LeftShift, Keys.RightShift);
-        char specialKeyname, specialUpperKeyname;
-        foreach (Keys key in pressed)
+        if (!Selected) return;
+        _blink = (_blink + Gui.Delta) % 1f;
+        bool shift = Gui.AnyKeyDown(Keys.LeftShift, Keys.RightShift);
+        bool capsLock = Gui.KeyDown(Keys.CapsLock);
+
+        foreach (Keys key in Gui.KeysPressed)
         {
-            string keyname = key.ToString();
-            if ((textsize + Font.MeasureString(ParseRegularChar(keyname, shifted)).X < Dimensions.X - 2 * Border || controlKeys.Contains(keyname)))
-            {
-                // Check repeated hold
-                if (Gui.LastKeyState.GetPressedKeys().Contains(key)) { keyHoldTimes[key] += Gui.Delta; }
-                else { keyHoldTimes[key] = 0f; keyHoldPauses[key] = 0f; }
-
-                if (keyHoldTimes[key] >= 0.5f) { keyHoldPauses[key] += Gui.Delta; }
-
-                if (Gui.LastKeyState.GetPressedKeys().Contains(key) && keyHoldPauses[key] < 0.04f) { continue; }
-                else { keyHoldPauses[key] = 0f; }
-
-                // Uppercase letter
-                if (keyname.Length == 1 && shifted) { Text = Text.Insert(Cursor, keyname); }
-                // Lowercase letter
-                else if (keyname.Length == 1) { Text = Text.Insert(Cursor, keyname.ToLower()); }
-                // Lowercase symbol
-                else if (!shifted && specialKeys.TryGetValue(keyname, out specialKeyname)) { Text = Text.Insert(Cursor, specialKeyname.ToString()); ; }
-                // Uppercase symbol
-                else if (shifted && specialKeys.ContainsKey(keyname) && upperSymbols.TryGetValue(keyname, out specialUpperKeyname)) { Text = Text.Insert(Cursor, specialUpperKeyname.ToString()); }
-                // Backspace
-                else if (keyname == "Back" && Cursor > 0) { Text = Text.Remove(Cursor - 1, 1); }
-                // Move cursor right
-                else if (keyname == "Right" && Cursor < Text.Length) { Cursor++; }
-                // Move cursor left
-                else if (keyname == "Left" && Cursor > 0) { Cursor--; }
-                // Continue
-                else { continue; }
-
-                // Every taken key other than backspace, left arrow, and right arrow adds a char
-                if (keyname == "Back" && Cursor > 0) { Cursor--; }
-                else if (!controlKeys.Contains(keyname)) { Cursor++; }
-                Reload();
-            }
+            if (!ShouldHandle(key)) continue;
+            HandleKey(key, shift, capsLock);
         }
+        foreach (Keys releasedKey in _heldKeys.Keys.Except(Gui.KeysPressed).ToArray()) _heldKeys.Remove(releasedKey);
     }
+
     public override void Draw()
     {
-        // Not drawing
-        if (!Visible) { return; }
-
-        // Background
+        if (!Visible) return;
         Gui.Batch.FillRectangle(Rect, Selected ? Highlight : Color);
-        // Outline
-        Gui.Batch.DrawRectangle(Rect, BorderColor);
+        Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
+        if (Font is null) return;
 
-        // Text
-        if (Font != null)
-        {
-            Gui.Batch.DrawString(Font, Text, new(Location.X + Border, Location.Y + Border), Foreground);
-        }
-        else if (Text != "")
-        {
-            Console.WriteLine($"Skipping drawing text '{Text}' because of uninitialized font");
-        }
+        if (Text.Length > 0) Gui.Batch.DrawString(Font, Text, new Vector2(Location.X + Border, Location.Y + Border), Foreground);
+        else if (!Selected && Placeholder.Length > 0) Gui.Batch.DrawString(Font, LimitString(Placeholder, Font, InnerWidth), new Vector2(Location.X + Border, Location.Y + Border), PlaceholderColor);
 
-        // Cursor
-        if (blink >= .5) { Gui.Batch.DrawLine(Location.X + Border + cursorX, Location.Y + Border + 1, Location.X + Border + cursorX, Location.Y + charsize.Y + 2, Color.Black, 2); }
+        if (Selected && _blink >= 0.5f)
+        {
+            float height = Math.Min(_characterSize.Y, Dimensions.Y - Border * 2);
+            Gui.Batch.DrawLine(new Vector2(Location.X + Border + _cursorX, Location.Y + Border + 1), new Vector2(Location.X + Border + _cursorX, Location.Y + Border + height), Foreground, 1);
+        }
     }
+
     public override void Reload()
     {
-        charsize = Font != null ? Font.MeasureString("_") : new(0, 0);
-        // Recalculate text size
-        textsize = Text.Length > 0 ? (int)Font.MeasureString(Text).X : 0;
-        cursorX = Font != null ? (int)Font.MeasureString(Text[..Cursor]).X : 0;
-        blink = .51f;
+        Cursor = Math.Clamp(Cursor, 0, Text.Length);
+        _characterSize = Font?.MeasureString("_") ?? Vector2.Zero;
+        _cursorX = Font is null ? 0 : (int)Font.MeasureString(Text[..Cursor]).X;
+        _blink = 0f;
     }
-    public string ParseRegularChar(string keyname, bool shifted)
+
+    public void SetText(string? text, bool notify = true)
     {
-        char specialKeyname, specialUpperKeyname;
-        // Uppercase letter
-        if (keyname.Length == 1 && shifted) { return keyname; }
-        // Lowercase letter
-        else if (keyname.Length == 1) { return keyname.ToLower(); }
-        // Lowercase symbol
-        else if (!shifted && specialKeys.TryGetValue(keyname, out specialKeyname)) { return specialKeyname.ToString(); }
-        // Uppercase symbol
-        else if (shifted && specialKeys.ContainsKey(keyname) && upperSymbols.TryGetValue(keyname, out specialUpperKeyname)) { return specialUpperKeyname.ToString(); }
-        return "";
-    }
-    public void SetText(string text)
-    {
-        Text = text;
-        if (Cursor > text.Length) { Cursor = text.Length; }
+        string newText = text ?? string.Empty;
+        if (MaxLength > 0 && newText.Length > MaxLength) newText = newText[..MaxLength];
+        if (Text == newText) { Reload(); return; }
+        Text = newText;
         Reload();
+        if (notify) TextChanged?.Invoke(Text);
     }
-    // Static
-    public int TextMeasure(SpriteFont font, char character) { return (int)font.MeasureString(character.ToString()).X; }
-    public int TextMeasure(SpriteFont font, string character) { return (int)font.MeasureString(character).X; }
+
+    public void Clear(bool notify = true) => SetText(string.Empty, notify);
+
+    [Obsolete("Use SetText. This compatibility method is retained for existing callers.")]
+    public string ParseRegularChar(string keyname, bool shifted) => TryGetCharacter(Enum.TryParse(keyname, out Keys key) ? key : Keys.None, shifted, false, out char character) ? character.ToString() : string.Empty;
+
+    public static int TextMeasure(SpriteFont font, char character) => (int)font.MeasureString(character.ToString()).X;
+    public static int TextMeasure(SpriteFont font, string text) => (int)font.MeasureString(text).X;
+
+    private float InnerWidth => Math.Max(0, Dimensions.X - Border * 2);
+
+    private bool ShouldHandle(Keys key)
+    {
+        if (!Gui.LastKeyState.IsKeyDown(key)) { _heldKeys[key] = 0; return true; }
+        if (!_heldKeys.TryGetValue(key, out float held)) held = 0;
+        held += Gui.Delta;
+        _heldKeys[key] = held;
+        if (held < InitialRepeatDelay) return false;
+        float previous = held - Gui.Delta - InitialRepeatDelay;
+        return (int)(previous / RepeatInterval) != (int)((held - InitialRepeatDelay) / RepeatInterval);
+    }
+
+    private void HandleKey(Keys key, bool shift, bool capsLock)
+    {
+        switch (key)
+        {
+            case Keys.Back:
+                if (Cursor > 0) Replace(Text.Remove(Cursor - 1, 1), Cursor - 1);
+                return;
+            case Keys.Delete:
+                if (Cursor < Text.Length) Replace(Text.Remove(Cursor, 1), Cursor);
+                return;
+            case Keys.Left:
+                Cursor = Math.Max(0, Cursor - 1); Reload(); return;
+            case Keys.Right:
+                Cursor = Math.Min(Text.Length, Cursor + 1); Reload(); return;
+            case Keys.Home:
+                Cursor = 0; Reload(); return;
+            case Keys.End:
+                Cursor = Text.Length; Reload(); return;
+            case Keys.Enter:
+                Submitted?.Invoke(Text); return;
+        }
+
+        if (!TryGetCharacter(key, shift, capsLock, out char character) || (MaxLength > 0 && Text.Length >= MaxLength)) return;
+        string proposed = Text.Insert(Cursor, character.ToString());
+        if (Font is not null && Font.MeasureString(proposed).X > InnerWidth) return;
+        Replace(proposed, Cursor + 1);
+    }
+
+    private void Replace(string newText, int cursor)
+    {
+        if (Text == newText) return;
+        Text = newText;
+        Cursor = cursor;
+        Reload();
+        TextChanged?.Invoke(Text);
+    }
+
+    private int GetCursorAt(float x)
+    {
+        if (Font is null || x <= 0) return 0;
+        for (int index = 1; index <= Text.Length; index++)
+            if (Font.MeasureString(Text[..index]).X >= x) return index;
+        return Text.Length;
+    }
+
+    private static bool TryGetCharacter(Keys key, bool shift, bool capsLock, out char character)
+    {
+        character = default;
+        if (key is >= Keys.A and <= Keys.Z)
+        {
+            char letter = (char)('a' + (key - Keys.A));
+            character = shift ^ capsLock ? char.ToUpperInvariant(letter) : letter;
+            return true;
+        }
+        string normal = "1234567890";
+        string shifted = "!@#$%^&*()";
+        if (key is >= Keys.D0 and <= Keys.D9)
+        {
+            int index = key - Keys.D0;
+            character = shift ? shifted[index] : normal[index];
+            return true;
+        }
+        character = key switch
+        {
+            Keys.Space => ' ', Keys.OemPeriod => shift ? '>' : '.', Keys.OemComma => shift ? '<' : ',',
+            Keys.OemQuestion => shift ? '?' : '/', Keys.OemSemicolon => shift ? ':' : ';', Keys.OemQuotes => shift ? '"' : '\'',
+            Keys.OemPlus => shift ? '+' : '=', Keys.OemMinus => shift ? '_' : '-', Keys.OemPipe => shift ? '|' : '\\',
+            Keys.OemOpenBrackets => shift ? '{' : '[', Keys.OemCloseBrackets => shift ? '}' : ']', Keys.OemTilde => shift ? '~' : '`',
+            _ => default
+        };
+        return character != default;
+    }
 }

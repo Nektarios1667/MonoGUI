@@ -1,11 +1,13 @@
-# MonoGUI
-MonoGUI is a C# library designed for creating simple graphical user interfaces made of widgets in the MonoGame framework.
+# MonoGUI 2.0
+
+MonoGUI is a lightweight C# GUI library for MonoGame. Version 2.0 is a package-first library release: it no longer ships a demo executable or requires compiled `.xnb` assets.
 
 ## Features
-- Supports buttons, labels, text inputs, popups, and more.
+- Supports buttons, labels, text inputs, popups, lists, menus, sliders, and scroll views.
 - Customizable colors and styles.
-- Simple event handling for user interactions.
-- Lightweight and efficient for performance.
+- Events for clicks, selections, text updates, submissions, and value changes.
+- Built-in slider and dropdown glyphs generated at runtime—no content-pipeline setup required.
+- Safer widget layering and mutation during callbacks.
 
 ## Widgets
 - Button
@@ -46,14 +48,14 @@ Use the following code to set the GUI up in the Game class.
 protected override void LoadContent()
 {
     _spriteBatch = new SpriteBatch(GraphicsDevice);  // Spritebatch
-    Gui = new GUI(this, _spriteBatch);  // Create new GUI and pass in Game and SpriteBatch
-    Gui.LoadContent(Content);  // Load content for the GUI or items may not be rendered
+    Gui = new GUI(this, _spriteBatch, font);  // Create new GUI and pass in Game, SpriteBatch, and a font
+    Gui.LoadContent();  // Creates MonoGUI's built-in glyph textures
 
     // Add new widgets
-    Gui.Widgets = new List<Widget> [
-        new Button(Gui, new(50, 50), new(100, 30), Color.White, Color.Gray, Color.DarkGray, (Action<string>)Console.WriteLine, args: ["Click!"], text: $"Button", font: Arial)
-        // Add new widgets here
-    ];
+    Gui.AddWidgets(
+        new Button(Gui, new(50, 50), new(100, 30), Color.White, Color.Gray, Color.DarkGray,
+            (Action<string>)Console.WriteLine, args: ["Click!"], text: "Button", font: font)
+    );
 }
 ```
 Use the following code to update the GUI every frame.
@@ -98,9 +100,22 @@ protected override void Draw(GameTime gameTime)
 ```
 Some widgets, such as the slider, have events that can be subscribed to.  
 ```csharp
-HorizontalSlider slider = new HorizontalSlider(Gui, new(100, 725), 100, Color.Black, new(55, 55, 55));
-slider.ValueChanged += Console.WriteLine;
+var input = new Input(Gui, new(50, 100), new(240, 30), Color.Black, Color.White, Color.LightGray, font)
+{
+    Placeholder = "Type a name",
+    MaxLength = 32,
+};
+input.TextChanged += value => Console.WriteLine($"Text: {value}");
+input.Submitted += value => Console.WriteLine($"Submitted: {value}");
 ```
+
+## What's new in 2.0
+
+- Fixed front-layering, text wrapping and truncation edge cases, slider track clicks, checkbox duplicate notifications, and scrollbar dragging.
+- Rebuilt `Input` with keyboard repeat, cursor positioning, Delete/Home/End, Caps Lock support, placeholders, maximum length, and text events.
+- Rebuilt `ScrollBar` and `ScrollBox` around a real viewport and proportional thumb.
+- Added `Button.Clicked`, `Input.TextChanged`, `Input.Submitted`, `Input.Clear`, `ScrollBox.ClearItems`, `ScrollBox.ScrollBar`, and `GUI.Dispose`.
+- `GUI.Widgets` is now intentionally read-only as a property; use `AddWidget`, `AddWidgets`, or its list methods to manage widgets.
 
 ## [License](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)
 Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA) license. Distributing and changing this code is allowed if you give appropriate credit, provide a link to the license, and indicate if changes were made. You may not use the material for commercial purposes. If you remix, transform, or build upon this code, you must distribute your contributions under the same license as the original. You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.

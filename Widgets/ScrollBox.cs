@@ -1,11 +1,13 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
 namespace MonoGUI;
 
+/// <summary>A selectable list with a viewport and a proportional vertical scrollbar.</summary>
 public class ScrollBox : Widget, ILinkable
 {
-    public string LinkableValue => ScrollBar.LinkableValue;
-    public event Action<string> ItemSelected;
+    private readonly ScrollBar _scrollBar;
+    private int _itemHeight;
+
+    public string LinkableValue => _scrollBar.LinkableValue;
+    public event Action<string>? ItemSelected;
     public Point Dimensions { get; set; }
     public Color Color { get; set; }
     public Color Highlight { get; set; }
@@ -13,108 +15,119 @@ public class ScrollBox : Widget, ILinkable
     public Color Foreground { get; set; }
     public int Seperation { get; set; }
     public int Border { get; set; }
-    public Color BorderColor { get; set; }
-    public List<Button> Items { get; set; }
-    public string Selected { get; private set; }
+    public List<Button> Items { get; } = [];
+    public string Selected { get; private set; } = string.Empty;
     public TextAlign Align { get; set; }
-    // Private
-    private VerticalSlider ScrollBar;
-    private int itemHeight;
-    public ScrollBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, TextAlign align = TextAlign.Left, SpriteFont? font = default, int seperation = 1, int border = 3, Color borderColor = default, Color? thumbColor = null, Color? thumbHighlight = null, Color? troughColor = null) : base(gui, location)
+    public ScrollBar ScrollBar => _scrollBar;
+
+    public ScrollBox(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight,
+        TextAlign align = TextAlign.Left, SpriteFont? font = default, int seperation = 1, int border = 3,
+        Color borderColor = default, Color? thumbColor = null, Color? thumbHighlight = null, Color? troughColor = null) : base(gui, location)
     {
         Dimensions = dimensions;
-        Items = [];
-        Selected = "";
-        Font = font == default ? gui.Font : font;
+        Font = font ?? gui.Font;
         Align = align;
         Foreground = foreground;
         Color = color;
         Highlight = highlight;
-        Seperation = seperation;
-        Border = border;
-        BorderColor = (borderColor == default ? Color.Black : borderColor);
-        itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
-        ScrollBar = new(gui, new(location.X + dimensions.X + border + 5, location.Y + border), dimensions.Y - border * 2, color: thumbColor ?? Color.Black, highlight: thumbHighlight ?? GUI.NearBlack, background: troughColor ?? Color.Gray);
+        Seperation = Math.Max(0, seperation);
+        Border = Math.Max(0, border);
+        BorderColor = borderColor == default ? Microsoft.Xna.Framework.Color.Black : borderColor;
+        _itemHeight = Font is null ? 0 : Font.LineSpacing + Seperation * 2;
+        _scrollBar = new ScrollBar(gui, Point.Zero, 1, thumbColor ?? Microsoft.Xna.Framework.Color.Black,
+            thumbHighlight ?? GUI.NearBlack, background: troughColor ?? Microsoft.Xna.Framework.Color.Gray);
+        Layout();
     }
+
+    public Color BorderColor { get; set; }
+
     public override void Update()
     {
-        // Hidden
-        if (!Visible) { return; }
+        if (!Visible || !Enabled) return;
+        Layout();
+        _scrollBar.Update();
 
-        // Scrollbar
-        if (Items.Count * itemHeight > Dimensions.Y - Border * 2)
-            ScrollBar.Visible = true;
-        else
+        int offset = ScrollOffset;
+        for (int index = 0; index < Items.Count; index++)
         {
-            ScrollBar.Visible = false;
-            ScrollBar.SetValue(0);
-        }
-        ScrollBar.Update();
-
-        // Hovering
-        for (int b = 0; b < Items.Count; b++)
-        {
-            // Item
-            Button item = Items[b];
-            // Location
-            // default location                              scrolling             extra line                 remove one page
-            item.Location = new(item.Location.X, Location.Y + Border - Seperation + (itemHeight * b) - (int)(ScrollBar.Value * itemHeight * (Items.Count + 1)) + (int)(ScrollBar.Value * Dimensions.Y));
-            // Check X
-            if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X > Location.X + Dimensions.X) { continue; }
-            // Check Y
-            if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y > Location.Y + Dimensions.Y) { continue; }
-            // Update
-            item.Update();
+            Button item = Items[index];
+            item.Location = new Point(Location.X + Border, ViewportTop + index * _itemHeight - offset);
+            if (IsFullyInViewport(item.Rect)) item.Update();
         }
     }
+
     public override void Draw()
     {
-        // Not drawing
-        if (!Visible) { return; }
-        if (Font == null) { return; }
-
+        if (!Visible) return;
         Rectangle rect = new(Location, Dimensions);
-        // Background
         Gui.Batch.FillRectangle(rect, Color);
-        // Outline
         Gui.Batch.DrawRectangle(rect, BorderColor, Border);
+        if (Font is null) return;
 
-        // Items
         foreach (Button item in Items)
         {
-            // Check X
-            if (item.Location.X < Location.X || item.Location.X + item.Dimensions.X > Location.X + Dimensions.X) { continue; }
-            // Check Y
-            if (item.Location.Y < Location.Y || item.Location.Y + item.Dimensions.Y > Location.Y + Dimensions.Y) { continue; }
-            // Draw
+            if (!IsFullyInViewport(item.Rect)) continue;
             item.Draw();
             if (Selected == item.Text)
             {
-                Rectangle highlightRect = new(item.Location.X + Border + 1, item.Location.Y + Border + 1, item.Dimensions.X - Border * 2 - 2, item.Dimensions.Y - Border * 2 - 2);
-                Gui.Batch.FillRectangle(highlightRect, Highlight * 0.5f);
+                Rectangle selected = item.Rect;
+                selected.Inflate(-Math.Max(1, item.Border), -Math.Max(1, item.Border));
+                Gui.Batch.FillRectangle(selected, Highlight * 0.5f);
             }
         }
-
-        // Scrollbar
-        ScrollBar.Draw();
+        _scrollBar.Draw();
     }
+
     public override void Reload()
     {
-        itemHeight = Font != null ? (int)Font.MeasureString("|").Y + Seperation * 2 : 0;
+        _itemHeight = Font is null ? 0 : Font.LineSpacing + Seperation * 2;
+        foreach (Button item in Items) item.Font = Font;
+        Layout();
     }
+
     public void AddItems(params string[] texts)
     {
+        ArgumentNullException.ThrowIfNull(texts);
         foreach (string text in texts)
         {
-            Point loc = new(Location.X + Border - Seperation, Location.Y + Border / 2 - Seperation + itemHeight * Items.Count);
-            Point dim = new(Dimensions.X - Border - Seperation, itemHeight);
-            Items.Add(new(Gui, loc, dim, Foreground, Color, Highlight, SelectItem, [text], text, align: Align, font: Font, border: Seperation, borderColor: BorderColor));
+            Button item = new(Gui, Point.Zero, new Point(Math.Max(1, Dimensions.X - Border * 2), Math.Max(1, _itemHeight)),
+                Foreground, Color, Highlight, SelectItem, [text], text, align: Align, font: Font, border: Seperation, borderColor: BorderColor);
+            Items.Add(item);
         }
+        Layout();
     }
-    public void SelectItem(string item) { Selected = item; OnItemSelected(item); }
-    // When changed value
-    public virtual void OnItemSelected(string item)
+
+    public void ClearItems()
     {
-        ItemSelected?.Invoke(item); // Invoke the event if any listeners are attached
+        Items.Clear();
+        Selected = string.Empty;
+        _scrollBar.SetValue(0, notify: false);
+        Layout();
     }
+
+    public void SelectItem(string item)
+    {
+        if (Selected == item) return;
+        Selected = item;
+        ItemSelected?.Invoke(item);
+    }
+
+    private int ViewportTop => Location.Y + Border;
+    private int ViewportHeight => Math.Max(0, Dimensions.Y - Border * 2);
+    private int ContentHeight => Items.Count * _itemHeight;
+    private int ScrollOffset => (int)MathF.Round(_scrollBar.Value * Math.Max(0, ContentHeight - ViewportHeight));
+
+    private void Layout()
+    {
+        bool needsScrollbar = ContentHeight > ViewportHeight;
+        _scrollBar.Location = new Point(Location.X + Dimensions.X + Border + 5, ViewportTop);
+        _scrollBar.Length = ViewportHeight;
+        _scrollBar.BarSize = needsScrollbar && ContentHeight > 0
+            ? Math.Clamp((int)MathF.Round(ViewportHeight * (ViewportHeight / (float)ContentHeight)), 12, Math.Max(12, ViewportHeight))
+            : Math.Max(1, ViewportHeight);
+        _scrollBar.Visible = needsScrollbar;
+        if (!needsScrollbar) _scrollBar.SetValue(0, notify: false);
+    }
+
+    private bool IsFullyInViewport(Rectangle rect) => rect.Top >= ViewportTop && rect.Bottom <= ViewportTop + ViewportHeight && rect.Left >= Location.X + Border && rect.Right <= Location.X + Dimensions.X - Border;
 }

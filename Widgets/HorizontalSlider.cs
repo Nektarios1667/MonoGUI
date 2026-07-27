@@ -30,15 +30,17 @@ public class HorizontalSlider : Widget, ILinkable
         // Hidden
         if (!Visible) { return; }
 
-        // Hovering
-        if (PointCircleCollide(Gui.MousePosition, new Vector2(Location.X + Value * Length, Location.Y), Size) || dragging)
+        if (!Enabled) { State = 0; return; }
+        // The whole track is clickable; the old behaviour required users to hit the small thumb first.
+        Rectangle hitArea = new(Location.X - Size, Location.Y - Size, Length + Size * 2, Size * 2);
+        if (hitArea.Contains(Gui.MousePosition) || dragging)
         {
             // Clicking
             if (Gui.LMouseDown)
             {
                 // Update
                 State = 2;
-                float val = Math.Clamp((Gui.MousePosition.X - Location.X) / (float)Length, 0, 1);
+                float val = Length <= 0 ? 0 : Math.Clamp((Gui.MousePosition.X - Location.X) / (float)Length, 0, 1);
                 dragging = true;
 
                 // Change
@@ -73,7 +75,9 @@ public class HorizontalSlider : Widget, ILinkable
     }
     public void SetValue(float newValue)
     {
-        Value = Math.Clamp(newValue, 0, 1);
-        OnValueChanged(Value); // Invoke the event when the value is set programmatically
+        float value = Math.Clamp(newValue, 0, 1);
+        if (Value == value) return;
+        Value = value;
+        OnValueChanged(Value);
     }
 }

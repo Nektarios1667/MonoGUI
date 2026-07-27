@@ -21,6 +21,7 @@ public class Button : Widget, ILinkable
     public int State { get; private set; }
     public int Shift { get; set; }
     public TextAlign Align { get; set; }
+    public event Action? Clicked;
     // Private
     private Vector2 offset;
     public Button(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, Delegate? function, object?[] args, string text = "", TextAlign align = TextAlign.Middle, SpriteFont? font = default, int border = 3, Color borderColor = default, int shift = 0) : base(gui, location)
@@ -47,10 +48,10 @@ public class Button : Widget, ILinkable
     public override void Update()
     {
         // Hidden
-        if (!Visible) { return; }
+        if (!Visible || !Enabled) { State = 0; return; }
 
         // Hovering
-        if (PointRectCollide(Location.ToVector2(), new Vector2(Dimensions.X - Border, Dimensions.Y - Border), Gui.MousePosition))
+        if (Rect.Contains(Gui.MousePosition))
         {
             // Clicking
             if (Gui.LMouseClicked)
@@ -60,6 +61,7 @@ public class Button : Widget, ILinkable
                     Function?.DynamicInvoke();
                 else
                     Function?.DynamicInvoke(Args);
+                Clicked?.Invoke();
             }
             else { State = 1; }
         }
@@ -90,10 +92,9 @@ public class Button : Widget, ILinkable
     public override void Reload()
     {
         // Text dim
-        Vector2 textDim = Font != null ? Font.MeasureString(Text) : new(0, 0);
         Vector2 inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
-        offset = Vector2.Floor((inside - textDim) / 2);
-        // Cutoff text
         CutoffText = Font != null ? LimitString(Text, Font, inside.X) : Text;
+        Vector2 textDim = Font != null ? Font.MeasureString(CutoffText) : Vector2.Zero;
+        offset = Vector2.Floor((inside - textDim) / 2);
     }
 }

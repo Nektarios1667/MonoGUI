@@ -8,7 +8,7 @@ public class Checkbox : Widget, ILinkable
     {
         get { return new(Location.X, Location.Y, Size, Size); }
     }
-    public event Action<bool> ValueChanged;
+    public event Action<bool>? ValueChanged;
     public Color Color { get; set; }
     public Color Highlight { get; set; }
     public Color Foreground { get; set; }
@@ -36,10 +36,10 @@ public class Checkbox : Widget, ILinkable
     public override void Update()
     {
         // Hidden
-        if (!Visible) { return; }
+        if (!Visible || !Enabled) { State = 0; return; }
 
         // Hovering
-        if (PointRectCollide(Location, new Point(Size), Gui.MousePosition.ToVector2()))
+        if (Rect.Contains(Gui.MousePosition))
         {
             // Clicking
             if (Gui.LMouseClicked)
@@ -74,13 +74,14 @@ public class Checkbox : Widget, ILinkable
         int checkSize = Size - CheckThickness - Border * 2;
         CheckDimensions = new(checkSize, checkSize);
     }
-    public void Check() { Checked = true; ValueChanged?.Invoke(Checked); }
+    public void Check() => SetValue(true);
 
-    public void Uncheck() { Checked = false; ValueChanged?.Invoke(Checked); }
+    public void Uncheck() => SetValue(false);
 
-    public void Toggle() { Checked = !Checked; ValueChanged?.Invoke(Checked); }
+    public void Toggle() => SetValue(!Checked);
     public void SetValue(bool value)
     {
+        if (Checked == value) return;
         Checked = value;
         ValueChanged?.Invoke(Checked);
     }

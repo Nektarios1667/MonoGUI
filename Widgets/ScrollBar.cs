@@ -1,11 +1,13 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
 namespace MonoGUI;
 
+/// <summary>A vertical scrollbar whose value represents the position of its thumb on the track.</summary>
 public class ScrollBar : Widget, ILinkable
 {
-    public string LinkableValue => Value.ToString();
-    public event Action<float> ValueChanged;
+    private bool _dragging;
+    private int _dragOffset;
+
+    public string LinkableValue => Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    public event Action<float>? ValueChanged;
     public int Length { get; set; }
     public Color Color { get; set; }
     public Color Highlight { get; set; }
@@ -14,61 +16,54 @@ public class ScrollBar : Widget, ILinkable
     public int State { get; private set; }
     public float Value { get; private set; }
     public int BarSize { get; set; }
-    // Private
-    private bool dragging = false;
-    public ScrollBar(GUI gui, Point location, int length, Color color, Color highlight, int barSize = 20, Color? background = null, int width = 10, int size = 7) : base(gui, location)
+    public Rectangle TrackRect => new(Location.X, Location.Y, Width, Math.Max(0, Length));
+    public Rectangle ThumbRect => new(Location.X, Location.Y + ThumbOffset, Width, EffectiveBarSize);
+
+    public ScrollBar(GUI gui, Point location, int length, Color color, Color highlight, int barSize = 20,
+        Color? background = null, int width = 10, int size = 7) : base(gui, location)
     {
-        Length = length;
+        Length = Math.Max(0, length);
         Color = color;
         Highlight = highlight;
-        BarSize = barSize;
-        Background = background ?? Color.DarkGray;
-        Width = width;
-        Value = 0;
-        State = 0; // 0 = nothing, 1 = hover, 2 = click
+        BarSize = Math.Max(1, barSize);
+        Background = background ?? Microsoft.Xna.Framework.Color.DarkGray;
+        Width = Math.Max(1, width);
     }
+
     public override void Update()
     {
-        // Hidden
-        if (!Visible) { return; }
-
-        // Hovering
-        if (PointRectCollide(new Rectangle(Location.X, (int)(Location.Y + (Value * Length)), Width, Length), Gui.MousePosition) || dragging)
+        if (!Visible || !Enabled) return;
+        Point mouse = Gui.MousePosition;
+        if (Gui.LMouseClicked && TrackRect.Contains(mouse))
         {
-            // Clicking
-            if (Gui.LMouseDown)
-            {
-                // Update
-                State = 2;
-                dragging = true;
-
-                // Change
-                if (Gui.MousePosition.Y - Gui.LastMouseState.Position.Y != 0)
-                {
-                    Value = Math.Clamp((Gui.MousePosition.Y - Location.Y) / (float)Length, 0, 1);
-                    Value = Math.Clamp(Value + Value * (BarSize / (float)Length), 0, 1);
-                    OnValueChanged(Value);
-                }
-            }
-            else { dragging = false; State = 1; }
+            _dragging = true;
+            _dragOffset = ThumbRect.Contains(mouse) ? mouse.Y - ThumbRect.Y : EffectiveBarSize / 2;
+            SetValueFromMouse(mouse.Y - _dragOffset);
         }
-        else { dragging = false; State = 0; }
+        if (_dragging && Gui.LMouseDown) SetValueFromMouse(mouse.Y - _dragOffset);
+        if (_dragging && Gui.LMouseReleased) _dragging = false;
+        State = _dragging ? 2 : ThumbRect.Contains(mouse) ? 1 : 0;
     }
 
     public override void Draw()
     {
-        // Not drawing
-        if (!Visible) { return; }
-
-        // Background
-        Gui.Batch.FillRectangle(new(Location.X, Location.Y, Width, Length), Background);
-        // Square
-        Gui.Batch.FillRectangle(new(Location.X, Location.Y + ((Value - Value * (BarSize / (float)Length)) * Length), Width, BarSize), Color);
+        if (!Visible) return;
+        Gui.Batch.FillRectangle(TrackRect, Background);
+        Gui.Batch.FillRectangle(ThumbRect, State == 0 ? Color : Highlight);
     }
 
-    // When changed value
-    public virtual void OnValueChanged(float newValue)
+    public void SetValue(float newValue, bool notify = true)
     {
-        ValueChanged?.Invoke(newValue); // Invoke the event if any listeners are attached
+        float clamped = Math.Clamp(newValue, 0f, 1f);
+        if (MathF.Abs(Value - clamped) < float.Epsilon) return;
+        Value = clamped;
+        if (notify) OnValueChanged(Value);
     }
+
+    public virtual void OnValueChanged(float newValue) => ValueChanged?.Invoke(newValue);
+
+    private int EffectiveBarSize => Math.Clamp(BarSize, 1, Math.Max(1, Length));
+    private int Travel => Math.Max(0, Length - EffectiveBarSize);
+    private int ThumbOffset => (int)MathF.Round(Value * Travel);
+    private void SetValueFromMouse(int thumbY) => SetValue(Travel == 0 ? 0f : (thumbY - Location.Y) / (float)Travel);
 }

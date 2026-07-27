@@ -1,46 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
+		<OutputType>Library</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 		<RollForward>Major</RollForward>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
 		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 	<!-- NuGet Package Metadata -->
 	<PropertyGroup>
 		<PackageId>MonoGUI</PackageId>
-		<Version>1.11.6.1</Version>
+		<Version>2.0.1</Version>
 		<Authors>Nektarios</Authors>
-		<Description>A simple GUI toolkit for MonoGame with simple customizable widgets.</Description>
+		<Description>A lightweight, package-ready GUI toolkit for MonoGame with composable widgets and reliable input handling.</Description>
 		<PackageTags>monogame;gui;ui</PackageTags>
 		<RepositoryUrl>https://github.com/Nektarios1667/MonoGUI</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>MonoGUI 2.0: library-first packaging, runtime glyphs, rebuilt input and scrolling controls, and core interaction fixes.</PackageReleaseNotes>
 	</PropertyGroup>
 
-	<!-- Restore dotnet tools -->
-	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
-		<Message Text="Restoring dotnet tools" Importance="High" />
-		<Exec Command="dotnet tool restore" />
-	</Target>
-	<!-- Install required .xnb files -->
-	<ItemGroup>
-		<Content Include="CompiledContent\**\*.xnb" Pack="true" PackagePath="contentFiles\any\Content\" />
-	</ItemGroup>
 	<!-- Remove unnecessary files from package -->
 	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
 		<None Remove=".gitattributes" />
 		<None Remove=".gitignore" />
 		<None Remove="app.manifest" />
-		<None Update="Program.cs" Pack="false" />
-		<None Update="Window.cs" Pack="false" />
+		<Compile Remove="Program.cs" />
+		<Compile Remove="Window.cs" />
 	</ItemGroup>
 
 	<!-- NuGet Dependencies -->
 	<ItemGroup>
 		<PackageReference Include="MonoGame.Extended" Version="4.0.4" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
 	</ItemGroup>
 </Project>

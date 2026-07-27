@@ -2,7 +2,7 @@
 
 public class ListBox : Widget
 {
-    public event Action<string> ItemSelected;
+    public event Action<string>? ItemSelected;
     public Point Dimensions { get; set; }
     public Color Color { get; set; }
     public Color Highlight { get; set; }

@@ -8,7 +8,7 @@ public class LinkedLabel : Widget
     public string Append { get; set; }
     public Color Color { get; set; }
     public SpriteFont? Font { get; set; }
-    public ILinkable Link { get; set; }
+    public ILinkable? Link { get; set; }
     // Centering
     public LinkedLabel(GUI gui, Point location, Color color, ILinkable link, string prepend, string append, SpriteFont? font = default) : base(gui, location)
     {
@@ -26,6 +26,6 @@ public class LinkedLabel : Widget
         if (Font == null) { return; }
 
         // Text
-        Gui.Batch.DrawString(Font, $"{Prepend}{Link.LinkableValue}{Append}", Location.ToVector2(), Color);
+        Gui.Batch.DrawString(Font, $"{Prepend}{Link?.LinkableValue ?? string.Empty}{Append}", Location.ToVector2(), Color);
     }
 }

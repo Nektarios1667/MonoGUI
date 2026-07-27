@@ -3,7 +3,7 @@
 public class Dropdown : Widget, ILinkable
 {
     public string LinkableValue => Selected;
-    public event Action<string> ItemSelected;
+    public event Action<string>? ItemSelected;
     public Point Dimensions { get; set; }
     public Color Color { get; set; }
     public Color Highlight { get; set; }
@@ -18,7 +18,6 @@ public class Dropdown : Widget, ILinkable
     public Button SelectButton { get; private set; }
     // private
     private int arrowSize;
-    private MouseState previousState;
     private int itemHeight;
     public Dropdown(GUI gui, Point location, Point dimensions, Color foreground, Color color, Color highlight, SpriteFont? font = default, int seperation = 2, int border = 2, Color borderColor = default) : base(gui, location)
     {

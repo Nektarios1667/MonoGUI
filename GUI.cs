@@ -3,10 +3,10 @@ global using Microsoft.Xna.Framework.Content;
 global using Microsoft.Xna.Framework.Graphics;
 global using Microsoft.Xna.Framework.Input;
 global using MonoGame.Extended;
+global using MonoGUI.Widgets;
 global using System;
 global using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 
 namespace MonoGUI;
@@ -17,7 +17,7 @@ public enum TextAlign
     Middle,
     Right,
 }
-public class GUI
+public sealed class GUI : IDisposable
 {
     // Colors
     public static readonly Color NearBlack = new(55, 55, 55);
@@ -53,9 +53,9 @@ public class GUI
     public int ScrollWheelChange => MouseState.ScrollWheelValue - LastMouseState.ScrollWheelValue;
 
     // Properties
-    public Game Game { get; set; }
-    public SpriteBatch Batch { get; private set; }
-    public List<Widget> Widgets { get; set; }
+    public Game Game { get; }
+    public SpriteBatch Batch { get; }
+    public List<Widget> Widgets { get; } = [];
     public MouseState MouseState { get; private set; }
     public MouseState LastMouseState { get; private set; }
     public KeyboardState KeyState { get; private set; }
@@ -67,14 +67,13 @@ public class GUI
     private bool _loaded { get; set; } = false;
     public GUI(Game game, SpriteBatch spriteBatch, SpriteFont guiFont)
     {
-        Game = game;
-        Widgets = [];
-        Batch = spriteBatch;
+        Game = game ?? throw new ArgumentNullException(nameof(game));
+        Batch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
         MouseState = new();
         KeyState = new();
         LastMouseState = new();
         LastKeyState = new();
-        Font = guiFont;
+        Font = guiFont ?? throw new ArgumentNullException(nameof(guiFont));
     }
     public void Update(float deltaTime, MouseState mouseState, KeyboardState keyState)
     {
@@ -89,7 +88,8 @@ public class GUI
         KeyState = keyState;
 
         // Updates
-        foreach (Widget widget in Widgets)
+        // Copying permits click handlers to add or remove widgets safely.
+        foreach (Widget widget in Widgets.ToArray())
             if (widget.Enabled)
                 widget.Update();
 
@@ -99,28 +99,86 @@ public class GUI
     }
     public void Draw()
     {
-        foreach (Widget widget in Widgets) { widget.Draw(); }
+        foreach (Widget widget in Widgets.ToArray()) { widget.Draw(); }
     }
+    /// <summary>Creates the small built-in textures used by sliders and dropdowns.</summary>
+    public void LoadContent()
+    {
+        CircleOutline?.Dispose();
+        ArrowDown?.Dispose();
+        CircleOutline = CreateCircleOutline();
+        ArrowDown = CreateArrowDown();
+        _loaded = true;
+    }
+
+    /// <summary>
+    /// Compatibility overload. Content is no longer required because MonoGUI generates its glyph textures at runtime.
+    /// </summary>
+    [Obsolete("MonoGUI 2.0 does not require compiled content. Use LoadContent() instead.")]
     public void LoadContent(ContentManager content, string filepath = "")
     {
-        string prepend = filepath == "" ? "" : filepath + Path.DirectorySeparatorChar;
-        CircleOutline = content.Load<Texture2D>($"{prepend}CircleOutline");
-        ArrowDown = content.Load<Texture2D>($"{prepend}ArrowDown");
-
-        _loaded = true;
+        ArgumentNullException.ThrowIfNull(content);
+        LoadContent();
     }
     // Layers
     public void BringToBack(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.Remove(moving); Widgets.Insert(0, moving); } }
     public void BringToBack(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(0, widget); } }
-    public void BringToFont(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.Remove(moving); Widgets.Append(moving); } }
-    public void BringToFront(Widget widget) { if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Append(widget); } }
+    public void BringToFront(int idx) { if (idx >= 0 && idx < Widgets.Count) { Widget moving = Widgets[idx]; Widgets.RemoveAt(idx); Widgets.Add(moving); } }
+    [Obsolete("Use BringToFront instead.")]
+    public void BringToFont(int idx) => BringToFront(idx);
+    public void BringToFront(Widget widget) { if (Widgets.Remove(widget)) { Widgets.Add(widget); } }
     public void BringToIndex(Widget widget, int idx)
     {
-        if (Widgets.Contains(widget)) { Widgets.Remove(widget); Widgets.Insert(Math.Clamp(idx, 0, Widgets.Count - 1), widget); }
+        if (!Widgets.Remove(widget)) return;
+        Widgets.Insert(Math.Clamp(idx, 0, Widgets.Count), widget);
     }
-    public void AddWidget(Widget widget) { Widgets.Add(widget); }
-    public void AddWidgets(params Widget[] widgets) { Widgets.AddRange(widgets); }
+    public void AddWidget(Widget widget) { ArgumentNullException.ThrowIfNull(widget); Widgets.Add(widget); }
+    public void AddWidgets(params Widget[] widgets) { ArgumentNullException.ThrowIfNull(widgets); foreach (Widget widget in widgets) AddWidget(widget); }
     public void RemoveWidget(Widget widget) { Widgets.Remove(widget); }
     public void RemoveWidgets(params Widget[] widgets) { foreach (Widget widget in widgets) Widgets.Remove(widget); }
+
+    public void Dispose()
+    {
+        CircleOutline?.Dispose();
+        ArrowDown?.Dispose();
+        CircleOutline = null;
+        ArrowDown = null;
+        _loaded = false;
+    }
+
+    private Texture2D CreateCircleOutline()
+    {
+        const int size = 25;
+        const float center = (size - 1) / 2f;
+        const float outerRadius = 11.5f;
+        const float innerRadius = 0f;
+        Color[] pixels = new Color[size * size];
+        for (int y = 0; y < size; y++)
+        for (int x = 0; x < size; x++)
+        {
+            float distance = Vector2.Distance(new Vector2(x, y), new Vector2(center));
+            pixels[y * size + x] = distance is <= outerRadius and >= innerRadius ? Color.White : Color.Transparent;
+        }
+        Texture2D texture = new(Batch.GraphicsDevice, size, size);
+        texture.SetData(pixels);
+        return texture;
+    }
+
+    private Texture2D CreateArrowDown()
+    {
+        const int width = 16;
+        const int height = 10;
+        Color[] pixels = new Color[width * height];
+        for (int y = 0; y < height; y++)
+        {
+            int halfWidth = Math.Max(1, (y + 1) * width / (height * 2));
+            int start = width / 2 - halfWidth;
+            int end = width / 2 + halfWidth;
+            for (int x = start; x <= end && x < width; x++) pixels[y * width + x] = Color.White;
+        }
+        Texture2D texture = new(Batch.GraphicsDevice, width, height);
+        texture.SetData(pixels);
+        return texture;
+    }
 
 }

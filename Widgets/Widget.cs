@@ -16,9 +16,10 @@ public abstract class Widget
     public void Modify(string property, object value, bool allowHidden = false)
     {
         // Get property
+        ArgumentException.ThrowIfNullOrWhiteSpace(property);
         PropertyInfo? propertyInfo = GetType().GetProperty(property);
         // If property does not exist or its hidden and allowHidden is disabled
-        if (propertyInfo == null || (!char.IsUpper(property[0]) && !allowHidden)) { throw new ArgumentException($"{GetType()} widget does not have property {property}"); }
+        if (propertyInfo == null || !propertyInfo.CanWrite || (!char.IsUpper(property[0]) && !allowHidden)) { throw new ArgumentException($"{GetType()} widget does not have a writable property named {property}.", nameof(property)); }
 
         // Check if new value and set
         if (!Equals(propertyInfo.GetValue(this), value)) { propertyInfo.SetValue(this, value); }
@@ -85,59 +86,60 @@ public abstract class Widget
     public static string Softwrap(string text, SpriteFont font, Point dimensions)
     {
         // setup
-        string wrapped = "";
-        int start = 0;
-        int end = 1;
-
-        while (end < text.Length)
+        if (string.IsNullOrEmpty(text) || dimensions.X <= 0) return text;
+        List<string> lines = [];
+        string line = string.Empty;
+        foreach (char character in text)
         {
-            // Wrap
-            if (font.MeasureString(text[start..end]).X + 2 > dimensions.X) { wrapped += $"{text[start..end]}\n"; start = end; }
-            end++;
+            if (character == '\n') { lines.Add(line); line = string.Empty; continue; }
+            string candidate = line + character;
+            if (line.Length > 0 && font.MeasureString(candidate).X + 2 > dimensions.X) { lines.Add(line); line = character.ToString(); }
+            else line = candidate;
         }
-        return wrapped + text[start..end];
+        lines.Add(line);
+        return string.Join('\n', lines);
     }
     public static string SoftwrapWords(string text, SpriteFont font, Point dimensions)
     {
-        // setup
-        string wrapped = "";
-        int start = 0;
-        int end = 1;
-
-        while (end < text.Length)
+        if (string.IsNullOrEmpty(text) || dimensions.X <= 0) return text;
+        List<string> lines = [];
+        foreach (string paragraph in text.Split('\n'))
         {
-            // Wrap
-            if (font.MeasureString(text[start..end]).X + 2 > dimensions.X)
+            string line = string.Empty;
+            foreach (string word in paragraph.Split(' ', StringSplitOptions.RemoveEmptyEntries))
             {
-                int cutoff = text[start..end].LastIndexOf(' ') + start;
-                if (cutoff <= start) { cutoff = end; }
-                wrapped += $"{text[start..cutoff]}\n";
-                start = cutoff + 1; // Add one to ignore the space itself
-                end = cutoff + 2;
+                string candidate = line.Length == 0 ? word : $"{line} {word}";
+                if (line.Length > 0 && font.MeasureString(candidate).X + 2 > dimensions.X) { lines.Add(line); line = word; }
+                else line = candidate;
             }
-            end++;
+            lines.Add(line);
         }
-        wrapped += text[start..];
-        return wrapped;
+        return string.Join('\n', lines);
     }
     // Trims and ellipses
     public static string LimitString(string text, SpriteFont font, float width)
     {
         // If it fits
-        if (font.MeasureString(text).X < width) { return text; }
+        if (width <= 0) return string.Empty;
+        if (font.MeasureString(text).X <= width) { return text; }
 
         // Cutting off
-        int end = text.Length - 1;
-        while (text[..end].Length > 0 && font.MeasureString($"{text[..end]}...").X > width) { end--; }
-        return $"{text[..end]}...";
+        const string ellipsis = "...";
+        if (font.MeasureString(ellipsis).X > width) return string.Empty;
+        int end = text.Length;
+        while (end > 0 && font.MeasureString($"{text[..end]}{ellipsis}").X > width) { end--; }
+        return $"{text[..end]}{ellipsis}";
     }
     public static string LimitLines(string text, SpriteFont font, float height)
     {
         // Height
-        float lineHeight = font.MeasureString(text.Split('\n')[0]).Y;
-
-        int maxLines = (int)Math.Max((height / lineHeight) - 1, 0);
-        return string.Join('\n', text.Split('\n')[..maxLines]) + "\n...";
+        string[] lines = text.Split('\n');
+        if (lines.Length == 0 || height <= 0) return string.Empty;
+        float lineHeight = font.LineSpacing;
+        int maxLines = Math.Max((int)(height / lineHeight), 0);
+        if (maxLines >= lines.Length) return text;
+        if (maxLines == 0) return string.Empty;
+        return maxLines == 1 ? "..." : string.Join('\n', lines[..(maxLines - 1)]) + "\n...";
     }
 
     // Drawing

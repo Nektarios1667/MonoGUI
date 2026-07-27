@@ -37,6 +37,7 @@ public class InfoBox : Widget, ILinkable
     }
     public override void Update()
     {
+        if (!Enabled) return;
         // Hovering
         if (PointRectCollide(Activation, Gui.MousePosition))
         {
@@ -53,14 +54,14 @@ public class InfoBox : Widget, ILinkable
         // Background
         Gui.Batch.FillRectangle(Rect, Color);
         // Text
-        Gui.Batch.DrawString(Font, Softwrapped, new(Location.X + Border + 2, Location.Y + Border + 2), Foreground);
+        if (Font is not null) Gui.Batch.DrawString(Font, Softwrapped, new(Location.X + Border + 2, Location.Y + Border + 2), Foreground);
         // Outline
         Gui.Batch.DrawRectangle(Rect, BorderColor, Border);
     }
     public override void Reload()
     {
-        Softwrapped = Font != null ? LimitLines(SoftwrapWords(Text, Font, Inside), Font, Inside.Y) : Text;
         Inside = new(Dimensions.X - Border * 2, Dimensions.Y - Border * 2);
         Rect = new(Location.X, Location.Y, Dimensions.X, Dimensions.Y);
+        Softwrapped = Font != null ? LimitLines(SoftwrapWords(Text, Font, Inside), Font, Inside.Y) : Text;
     }
 }
