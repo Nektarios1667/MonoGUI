@@ -19,6 +19,9 @@ public enum TextAlign
 }
 public sealed class GUI : IDisposable
 {
+    // Events
+    public event Action<Button>? ButtonClicked;
+
     // Colors
     public static readonly Color NearBlack = new(55, 55, 55);
     // Input generators
@@ -132,10 +135,13 @@ public sealed class GUI : IDisposable
         if (!Widgets.Remove(widget)) return;
         Widgets.Insert(Math.Clamp(idx, 0, Widgets.Count), widget);
     }
-    public void AddWidget(Widget widget) { ArgumentNullException.ThrowIfNull(widget); Widgets.Add(widget); }
+    public void AddWidget(Widget widget) { 
+        ArgumentNullException.ThrowIfNull(widget);
+        Widgets.Add(widget);
+        if (widget is Button button)
+            button.Clicked += () => ButtonClicked?.Invoke(button);
+    }
     public void AddWidgets(params Widget[] widgets) { ArgumentNullException.ThrowIfNull(widgets); foreach (Widget widget in widgets) AddWidget(widget); }
-    public void RemoveWidget(Widget widget) { Widgets.Remove(widget); }
-    public void RemoveWidgets(params Widget[] widgets) { foreach (Widget widget in widgets) Widgets.Remove(widget); }
 
     public void Dispose()
     {
